@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(phylodyn)
+
+date_min <- 1990
+date_max <- 2021
+
+const10 <- function(x){
+  return(rep(10, length(x)))
+}
+
+nrep <- 500
+
+#Uniform distribution - 20 observations
+stimes20 <- sort(runif(20, date_min, date_max))
+
+#Genealogies
+#(taxa — pl.) Any named group of organisms (e.g., the reptiles, Felidae, beetles, Homo sapiens).
+
+genealogies_20taxa <- lapply(1:nrep, function(i){
+  phylodyn::coalsim(samp_times = stimes20,
+                    n_sampled = rep(1,20),
+                    traj = const10,
+                    lower_bound = 1)
+})
+
+
+#200 taxa
+stimes200 <- sort(runif(200, date_min, date_max))
+
+genealogies_200taxa <- lapply(1:nrep, function(i){
+  phylodyn::coalsim(samp_times = stimes200,
+                    n_sampled = rep(1,200),
+                    traj = const10,
+                    lower_bound = 1)
+})
+```
+
+```{r}
+#Phylodynamic reconstruction of effective population size - 20 taxa
+system.time(
+  reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
+    BNPR(data = x, lengthout =100))
+)
+
+system.time(
+  reconstructions_20taxa_gumbel <- lapply(genealogies_20taxa, function(x)
+    BNPR(data = x, lengthout = 100, 
+         pc_prior = TRUE))
+)
+```
+
+```{r}
+#Phylodynamic reconstruction of effective population size - 200 taxa
+
+system.time(
+  reconstructions_200taxa_gamma <- lapply(genealogies_200taxa, function(x)
+    BNPR(data = x, lengthout = 100))
+)
+
+system.time(
+  reconstructions_200taxa_gumbel <- lapply(genealogies_200taxa, function(x)
+    BNPR(data = x, lengthout = 100, 
+         pc_prior = TRUE))
+)
+```
+
+Calculating the percent error:
+```{r}
+#20 taxa
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
+#O que width faz?
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
+#200 taxa
+errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
+#Width 200taxa
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
+errors_dt <- data.frame(
+  bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, errors_gumbel_200taxa),
+  widths = c(widths_gamma_20taxa, widths_gamma_200taxa, widths_gumbel_20taxa, widths_gumbel_200taxa),
+  ntaxa = rep(c("20", "200"), 2*nrep),
+  prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
+)
+
+
+#Apareceu esse erro:
+#Erro: tentativa de usar um nome de variável com comprimento zero
+
+```

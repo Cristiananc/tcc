@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(phylodyn)
+
+date_min <- 1990
+date_max <- 2021
+
+trajectory = exp_traj
+
+nrep <- 500
+
+#Uniform distribution - 20 observations
+stimes20 <- sort(runif(20, date_min, date_max))
+
+#Genealogies
+#(taxa — pl.) Any named group of organisms (e.g., the reptiles, Felidae, beetles, Homo sapiens).
+
+genealogies_20taxa <- lapply(1:nrep, function(i){
+  phylodyn::coalsim(samp_times = stimes20,
+                    n_sampled = rep(1,20),
+                    traj = const10,
+                    lower_bound = 1)
+})
+
+
+#200 taxa
+stimes200 <- sort(runif(200, date_min, date_max))
+
+genealogies_200taxa <- lapply(1:nrep, function(i){
+  phylodyn::coalsim(samp_times = stimes200,
+                    n_sampled = rep(1,200),
+                    traj = cconst10,
+                    lower_bound = 1)
+})
+```
+
+```{r}
+#Phylodynamic reconstruction of effective population size - 20 taxa
+system.time(
+  reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
+    BNPR(data = x, lengthout =100))
+)
+
+system.time(
+  reconstructions_20taxa_gumbel <- lapply(genealogies_20taxa, function(x)
+    BNPR(data = x, lengthout = 100, 
+         pc_prior = TRUE))
+)
+```
+
+```{r}
+#Phylodynamic reconstruction of effective population size - 200 taxa
+
+system.time(
+  reconstructions_200taxa_gamma <- lapply(genealogies_200taxa, function(x)
+    BNPR(data = x, lengthout = 100))
+)
+
+system.time(
+  reconstructions_200taxa_gumbel <- lapply(genealogies_200taxa, function(x)
+    BNPR(data = x, lengthout = 100, 
+         pc_prior = TRUE))
+)
+```
+
+Calculating the percent error
+```{r}
+errors_gamma_20taxa <- unlist(lapply(, function(x) 100 * ))
+```
+
