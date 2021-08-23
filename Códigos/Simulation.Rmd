@@ -99,8 +99,117 @@ errors_dt <- data.frame(
   prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
 )
 
-
 #Apareceu esse erro:
 #Erro: tentativa de usar um nome de variável com comprimento zero
 
 ```
+
+```{r}
+#Percent bias is
+pb <- ggplot(data = errors_dt, aes(x = prior, y = bias, fill= prior))
++ 
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent bias") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw()
+p
+```
+
+```{r}
+#Percent error is
+pe <- ggplot(data = errors_dt, aes(x = prior, y = abs(bias), fill = prior))
++
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent error") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw()
+
+pe
+```
+
+```{r}
+pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior))
++
+  geom_boxplot(alpha = .2) +
+  scale_y_log10("Relative wisth of 95% BCI") +
+  facet_grid(.~ ntaxa) +
+  theme_bw()
+
+pw
+```
+
+```{r}
+#do.call constructs and executes a function call from a name or a function and a list of arguments to be passed to it.
+
+summaries_gamma_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
+  data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
+             prior = "Gamma", ntaxa = "20")
+}))
+
+summaries_gumbel_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
+  data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
+             prior = "Gumbel", ntaxa = "20")
+}))
+
+summaries_gamma_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
+  data.frame(reconstructions_200taxa_gamma[[i]]$summary)
+}))
+
+summaries_gumbel_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
+  data.frame(reconstructions_200taxa_gumbel[[i]]$summary, 
+             prior = "Gumbel", ntaxa = "200")
+}))
+
+all_estimates <- rbind(summaries_gumbel_20taxa, summaries_gumbel_20taxa,
+                       summaries_gamma_200taxa, summaries_gumbel_200taxa)
+
+all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
+```
+```{r}
+for_plot <all_estimates
+for_plot$replicate <- as.factor(for_plot$replicate)
+options(repr.plot.width = 10, repr.plot.height = 7)
+peffpop <- ggplot(data = for_plot, aes(x = time, y = mean, col = piror, group = replicate)) +
+    scale_x_continuous("Times (years)", expand = c(0,0)) +
+    scale_y_continuous("Effective population size (mean)", expand = c(0,0)) +
+    geom_line(alpha = .5) + 
+    facet_grid(ntaxa~prior, scales = "free_y") +
+    guides(col = FALSE) +
+    theme_bw() +
+    geom_line(yintercept = 10, linetype = "dashed", size = .8) +
+    NULL
+```
+
+```{r}
+pd <- ggplot(data = for_plot, aes(x = replicate, y = sd, col = prior)) +
+  geom_boxplot(alpha = .3) +
+  scale_y_continuous("Standard deviations of effective population size", expand = c(0,0)) +
+  facet_grid(prior~.) +
+  guides(col = FALSE) +
+  geom_hline(yintercept = 25, linetype = "dashed", size = .8) +
+  geom_hline(yintercept = 50, linetype = "dashed", size = .8) +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  NULL
+```
+
+```{r}
+p <- ggplot(data = for_plot, aes(x = prior, y = sd, col = prior, fill = prior)) +
+ geom_boxplot(alpha = .3) +
+  scale_y_log10("All standard deviations") +
+  guides(col = FALSE) +
+  guides(col = FALSE) +
+  theme_bw() +
+  NULL
+
+p
+```
+
+```{r}
+
+```
+
