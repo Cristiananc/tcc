@@ -93,7 +93,7 @@ summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
-                       summaries_gamma_200taxa) #summaries_gumbel_200taxa)
+                       summaries_gamma_200taxa, summaries_gumbel_200taxa)
 
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
@@ -105,15 +105,18 @@ Plotting the effective population size:
 for_plot <- all_estimates
 for_plot$replicate <- as.factor(for_plot$replicate)
 options(repr.plot.width = 10, repr.plot.height = 7)
-peffpop <- ggplot(data = for_plot, aes(x = time, y = mean, col = prior, group = replicate)) +
+peffpop <- ggplot(data = for_plot) +
     scale_x_continuous("Times (years)", expand = c(0,0)) +
     scale_y_continuous("Effective population size (mean)", expand = c(0,0)) +
-    geom_line(alpha = .5) + 
+    geom_line(aes(x = time, y = mean, col = prior, group = replicate), alpha = .5) + 
     facet_grid(ntaxa~prior, scales = "free_y") +
     guides(col = "none") +
     theme_bw() +
+    stat_function(fun = trajectory_bottleneck, colour = 'black') +
     NULL
 
 peffpop
+ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
+       plot = peffpop)
 ```
 
