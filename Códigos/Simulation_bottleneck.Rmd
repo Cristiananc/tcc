@@ -26,7 +26,7 @@ stimes20 <- sort(runif(20, date_min, date_max))
 genealogies_20taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes20,
                     n_sampled = rep(1,20),
-                    traj = trajectory,
+                    traj = trajectory_bottleneck,
                     lower_bound = 1)
 })
 
@@ -37,7 +37,7 @@ stimes200 <- sort(runif(200, date_min, date_max))
 genealogies_200taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes200,
                     n_sampled = rep(1,200),
-                    traj = trajectory,
+                    traj = trajectory_bottleneck,
                     lower_bound = 1)
 })
 ```
@@ -69,23 +69,24 @@ system.time(
          pc_prior = TRUE))
 )
 ```
+
 ```{r}
-summaries_gamma_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
+summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
              prior = "Gamma", ntaxa = "20")
 }))
 
-summaries_gumbel_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
+summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
              prior = "Gumbel", ntaxa = "20")
 }))
 
-summaries_gamma_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
+summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gamma[[i]]$summary,
              replicate = i, prior = "Gamma", ntaxa = "200")
 }))
 
-summaries_gumbel_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
+summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
              prior = "Gumbel", ntaxa = "200")
