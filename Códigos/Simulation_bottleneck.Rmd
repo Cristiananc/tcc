@@ -73,8 +73,7 @@ system.time(
 ```{r}
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
-             prior = "Gamma", ntaxa = "20")
-}))
+             prior = "Gamma", ntaxa = "20")}))
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
@@ -89,7 +88,7 @@ summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200")
+             prior = "Gumbel", ntaxa = "200", )
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
@@ -118,5 +117,17 @@ peffpop <- ggplot(data = for_plot) +
 peffpop
 ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
        plot = peffpop)
+```
+Plotting a random individual case:
+```{r}
+
+```
+
+
+
+Calculating the percent error:
+
+```{r}
+
 ```
 
