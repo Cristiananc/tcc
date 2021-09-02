@@ -98,6 +98,11 @@ all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 
 ```
+Saving data frames in a txt file:
+```{r}
+#write.table(x,"filename.txt",sep="\t",row.names=FALSE)
+```
+
 
 Plotting the effective population size:
 ```{r}
@@ -120,6 +125,7 @@ ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
 ```
 Plotting a random individual case:
 ```{r}
+options(repr.plot.width = 10, repr.plot.height = 7)
 
 ```
 

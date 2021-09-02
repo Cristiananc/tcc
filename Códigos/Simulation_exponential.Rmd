@@ -22,7 +22,7 @@ stimes20 <- sort(runif(20, date_min, date_max))
 genealogies_20taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes20,
                     n_sampled = rep(1,20),
-                    traj = exp_traj,
+                    traj = trajectory_exponential,
                     lower_bound = 1)
 })
 
@@ -32,7 +32,7 @@ stimes200 <- sort(runif(200, date_min, date_max))
 genealogies_200taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes200,
                     n_sampled = rep(1,200),
-                    traj = trajectory_bottleneck,
+                    traj = trajectory_exponential,
                     lower_bound = 1)
 })
 ```
@@ -94,6 +94,11 @@ all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 
 ```
+Saving data frames in a txt file:
+```{r}
+#write.table(x,"filename.txt",sep="\t",row.names=FALSE)
+```
+
 
 Plotting the effective population size:
 ```{r}

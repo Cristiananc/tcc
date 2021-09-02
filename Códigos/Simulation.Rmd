@@ -70,11 +70,40 @@ system.time(
          pc_prior = TRUE))
 )
 ```
+Plotting five random individuals simulations for 200 taxa:
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+set.seed(9)
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+
+```
 
 Calculating the percent error:
 
 ```{r}
 #20 taxa
+#Por que divide por date_max?
 errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
 errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
@@ -87,7 +116,9 @@ widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x)
 #200 taxa
 errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
+
 errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
 
 #Width 200taxa
 widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
@@ -100,10 +131,6 @@ errors_dt <- data.frame(
   ntaxa = rep(c("20", "200"), 2*nrep),
   prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
 )
-
-#Apareceu esse erro:
-#Erro: tentativa de usar um nome de variável com comprimento zero
-
 ```
 
 ```{r}
@@ -169,6 +196,11 @@ all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 ```
+Saving data frames in a txt file:
+```{r}
+
+```
+
 
 ```{r}
 for_plot <- all_estimates
@@ -215,3 +247,9 @@ p <- ggplot(data = for_plot, aes(x = prior, y = sd, col = prior, fill = prior)) 
 
 p
 ```
+Plotting an individual random simulation:
+
+```{r}
+
+```
+
