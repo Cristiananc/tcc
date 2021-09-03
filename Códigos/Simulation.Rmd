@@ -70,7 +70,7 @@ system.time(
          pc_prior = TRUE))
 )
 ```
-Plotting five random individuals simulations for 200 taxa:
+Plotting five random individuals simulations for 20 taxa:
 ```{r}
 set.seed(9)
 #111  13 104 108 221
@@ -98,6 +98,34 @@ for (k in 1:5) {
 }
 
 ```
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
 
 Calculating the percent error:
 
@@ -196,6 +224,7 @@ all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 ```
+
 Saving data frames in a txt file:
 ```{r}
 

@@ -22,7 +22,7 @@ trajectory = exp_traj
 n = 30
 samp_times = rep(1,n)
 
-stimes20 <- sort(runif(n), 0, 10))
+stimes20 <- sort(runif(n), 0, 10)
 
 #Simulating a genealogy based on the sample
 gene = coalsim(samp_times = stimes, 

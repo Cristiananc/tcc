@@ -123,12 +123,64 @@ peffpop
 ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
        plot = peffpop)
 ```
-Plotting a random individual case:
+Plotting five random individuals simulations for 20 taxa:
 ```{r}
-options(repr.plot.width = 10, repr.plot.height = 7)
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
+
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+set.seed(9)
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
 
 ```
 
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
+
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
 
 
 Calculating the percent error:

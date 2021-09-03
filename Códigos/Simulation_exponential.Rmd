@@ -10,8 +10,8 @@ library(phylodyn)
 date_min <- 1990
 date_max <- 2021
 
-trajectory_exponential <- function(t, scale = 10^(-11), rate = 1){
-    return(scale * exp((t - 1990)* rate))
+trajectory_exponential <- function(t, scale = 1, rate = 1/10){
+    return(scale * exp(- (t - 1990) * rate))
 }
 
 n.sim <- 500 # number of simulations
@@ -23,7 +23,7 @@ genealogies_20taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes20,
                     n_sampled = rep(1,20),
                     traj = trajectory_exponential,
-                    lower_bound = 1)
+                    lower_bound = 1/20)
 })
 
 #200 taxa
