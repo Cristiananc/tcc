@@ -33,7 +33,7 @@ genealogies_200taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes200,
                     n_sampled = rep(1,200),
                     traj = trajectory_exponential,
-                    lower_bound = 1)
+                    lower_bound = 1/20)
 })
 ```
 
@@ -94,13 +94,9 @@ all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 
 ```
-Saving data frames in a txt file:
-```{r}
-#write.table(x,"filename.txt",sep="\t",row.names=FALSE)
-```
 
 
-Plotting the effective population size:
+Plotting the effective population size mean:
 ```{r}
 for_plot <- all_estimates
 for_plot$replicate <- as.factor(for_plot$replicate)
@@ -120,3 +116,60 @@ ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
        plot = peffpop)
 ```
 
+Plotting five random individuals simulations for 20 taxa:
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
+
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+set.seed(9)
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+
+```
+
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
+```{r}
+set.seed(9)
+#111  13 104 108 221
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```

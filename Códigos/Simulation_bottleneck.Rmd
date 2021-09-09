@@ -130,7 +130,7 @@ set.seed(9)
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = const10,
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'coral', 
@@ -144,7 +144,7 @@ set.seed(9)
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'coral', 
@@ -159,7 +159,7 @@ set.seed(9)
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
           yscale = 1,
           col = 'turquoise', 
@@ -174,7 +174,7 @@ set.seed(9)
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'turquoise', 
