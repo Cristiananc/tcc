@@ -131,7 +131,6 @@ Calculating the percent error:
 
 ```{r}
 #20 taxa
-#Por que divide por date_max?
 errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
 errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
@@ -187,7 +186,7 @@ pe
 ```{r}
 pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
   geom_boxplot(alpha = .2) +
-  scale_y_log10("Relative wisth of 95% BCI") +
+  scale_y_log10("Relative width of 95% BCI") +
   facet_grid(.~ ntaxa) +
   theme_bw()
 

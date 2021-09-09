@@ -3,6 +3,7 @@ library(phylodyn)
 library(ggplot2)
 library(latex2exp)
 library(Matrix)
+library(cowplot)
 
 tau <- 0.1
 
@@ -65,10 +66,34 @@ g <- ggplot(data = data_plot, aes(x = midpoint_distance_x)) +
   geom_line(aes(y = X9)) +
   geom_line(aes(y = X10)) +
   theme_bw() +
-  ggtitle("") +
+  ggtitle(TeX("$\\tau = 0.1")) +
   xlab("") + ylab("")
-  
-g
+
+ggsave("wiener_process_01.pdf",
+       plot = g)
+
+#Plotting for a different value of tau
+tau1 <- 1
+data_plot <- X_simulation(10, tau1)
+g1 <- ggplot(data = data_plot, aes(x = midpoint_distance_x)) +
+  geom_line(aes(y = X1)) +
+  geom_line(aes(y = X2)) +
+  geom_line(aes(y = X3)) +
+  geom_line(aes(y = X4)) +
+  geom_line(aes(y = X5)) +
+  geom_line(aes(y = X6)) +
+  geom_line(aes(y = X7)) +
+  geom_line(aes(y = X8)) +
+  geom_line(aes(y = X9)) +
+  geom_line(aes(y = X10)) +
+  theme_bw() +
+  ggtitle(TeX("$\\tau = 1")) +
+  xlab("") + ylab("")
+
+g1
+
+ggsave("wiener_process_1.pdf",
+       plot = g1)
 
 #For sampling from GMRF priors
 #L <- chol(tau*Q1D)

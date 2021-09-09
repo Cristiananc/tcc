@@ -19,6 +19,10 @@ n.sim <- 500 # number of simulations
 #20 taxa
 stimes20 <- sort(runif(20, date_min, date_max))
 
+#Erro a seguir aparecendo algumas vezes:
+#Error in stats::integrate(traj_inv, start, start + t, stop.on.error = FALSE) : 
+#a limit is NA or NaN
+
 genealogies_20taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes20,
                     n_sampled = rep(1,20),
