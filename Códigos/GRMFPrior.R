@@ -72,10 +72,32 @@ g <- ggplot(data = data_plot, aes(x = midpoint_distance_x)) +
 ggsave("wiener_process_01.pdf",
        plot = g)
 
+data_plot1 <- data.frame(midpoint_distance_x)
+
+
+X_simulation <- function(n_sim, tau){
+  for(j in 1:n_sim){
+    #We start with W(0) = 0
+    #Preallocate arrays
+    dX <- rep(0, k-1)
+    X <- rep(0, k)
+    var <- 0
+    
+    for (i in 2:k){
+      var <- midpoint_distance[i-1]/tau
+      dX[i-1] <- rnorm(1, mean = 0, sd = sqrt(var))
+      X[i] <- X[i-1] + dX[i-1]
+    }
+    data_plot1$y = X
+    names(data_plot1)[j+1] <- paste("X", j, sep="")
+  }
+  return(data_plot1)
+}
+
 #Plotting for a different value of tau
 tau1 <- 1
-data_plot <- X_simulation(10, tau1)
-g1 <- ggplot(data = data_plot, aes(x = midpoint_distance_x)) +
+data_plot1 <- X_simulation(10, tau1)
+g1 <- ggplot(data = data_plot1, aes(x = midpoint_distance_x)) +
   geom_line(aes(y = X1)) +
   geom_line(aes(y = X2)) +
   geom_line(aes(y = X3)) +
@@ -94,6 +116,7 @@ g1
 
 ggsave("wiener_process_1.pdf",
        plot = g1)
+g
 
 #For sampling from GMRF priors
 #L <- chol(tau*Q1D)

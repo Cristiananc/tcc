@@ -73,8 +73,11 @@ system.time(
 Plotting five random individuals simulations for 20 taxa:
 ```{r}
 set.seed(9)
-#111  13 104 108 221
 random_numbers <- sample(1:500, 5)
+
+for (k in 1:5){
+ggplot(data = reconstructions_20taxa_gamma[[k]])
+}
 
 for (k in 1:5) {
   plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = const10,
@@ -131,26 +134,34 @@ Calculating the percent error:
 
 ```{r}
 #20 taxa
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+percent_error <- function(x){
+  return(100 * (1/date_max) * sum((x$effpop - 10)/10))
+}
+  
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
 
-#O que width faz?
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+#Size of the posterior BC:
+#20 taxa
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+width <- function(x){
+  return((1/date_max) * sum((x$effpop975 - x$effpop025)/10))
+}
+
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, width(x)))
+
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, width(x)))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
 
-
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
-
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, width(x)))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, width(x)))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, errors_gumbel_200taxa),

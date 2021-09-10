@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(phylodyn)
+library(gridExtra) # combining plots
 
 date_min <- 1990
 date_max <- 2021
@@ -88,7 +89,7 @@ summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200", )
+             prior = "Gumbel", ntaxa = "200")
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
@@ -98,11 +99,6 @@ all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 
 ```
-Saving data frames in a txt file:
-```{r}
-#write.table(x,"filename.txt",sep="\t",row.names=FALSE)
-```
-
 
 Plotting the effective population size:
 ```{r}
@@ -120,13 +116,13 @@ peffpop <- ggplot(data = for_plot) +
     NULL
 
 peffpop
-ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
-       plot = peffpop)
+#ggsave("effective_pop_mean_bottleneck.pdf",
+#       plot = peffpop)
 ```
+
 Plotting five random individuals simulations for 20 taxa:
 ```{r}
 set.seed(9)
-#111  13 104 108 221
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
@@ -140,9 +136,6 @@ for (k in 1:5) {
 
 Plotting random individuals simulations for 200 taxa: 
 ```{r}
-set.seed(9)
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
@@ -154,10 +147,6 @@ for (k in 1:5) {
 ```
 
 ```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
@@ -169,10 +158,6 @@ for (k in 1:5) {
 
 
 ```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
@@ -183,30 +168,39 @@ for (k in 1:5) {
 ```
 
 
+
 Calculating the percent error:
 
 ```{r}
 #20 taxa
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+percent_error <- function(x){
+  return(100 * (1/date_max) * sum((x$effpop - 10)/10))
+}
+  
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
 
-#O que width faz?
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+#Size of the posterior BC:
+#20 taxa
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+width <- function(x){
+  return((1/date_max) * sum((x$effpop975 - x$effpop025)/10))
+}
+
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, width(x)))
+
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, width(x)))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
 
-
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
-
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, width(x)))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, width(x)))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, errors_gumbel_200taxa),
@@ -215,6 +209,7 @@ errors_dt <- data.frame(
   prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
 )
 ```
+
 
 ```{r}
 #Percent bias is
@@ -242,10 +237,9 @@ pe
 ```{r}
 pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
   geom_boxplot(alpha = .2) +
-  scale_y_log10("Relative wisth of 95% BCI") +
+  scale_y_log10("Relative width of 95% BCI") +
   facet_grid(.~ ntaxa) +
   theme_bw()
 
 pw
 ```
-
