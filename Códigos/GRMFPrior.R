@@ -21,14 +21,20 @@ midpoint_distance <- (gene$intercoal_times[1:k-1] + gene$intercoal_times[2:k])/2
 #Precision Matrix
 gene_intercoal1 <- replicate(k-1, 1)/midpoint_distance
 
-diag <- c(gene_intercoal1[1], gene_intercoal1[1:(k-2)] + gene_intercoal1[2:(k-1)], gene_intercoal1[k-1])
-Mdiag <- Diagonal(x = diag)
-Q1D <- Mdiag - sparseMatrix(i= seq(from = 2, to = k, by = 1), j = seq(from = 1, to = (k-1), by = 1), x= gene_intercoal1[1:k-1], dims=c(k, k), symmetric=TRUE)
-
 midpoint_distance_x <- rep(0, k)
 for(i in 2:k){
   midpoint_distance_x[i] = midpoint_distance[i-1] + midpoint_distance_x[i-1]
 }
+
+diag <- c(gene_intercoal1[1], gene_intercoal1[1:(k-2)] + gene_intercoal1[2:(k-1)], gene_intercoal1[k-1])
+Mdiag <- Diagonal(x = diag)
+Q1D <- Mdiag - sparseMatrix(i= seq(from = 2, to = k, by = 1), j = seq(from = 1, to = (k-1), by = 1), x= gene_intercoal1[1:k-1], dims=c(k, k), symmetric=TRUE)
+
+#For sampling from GMRF priors
+L <- chol(tau*Q1D)
+v <- matrix(rnorm(k*(k-1),mean=0,sd=1), k, k-1) 
+samps   <- solve(t(L),v)
+plot(midpoint_distance_x, samps[,1], type = 'l')
 
 data_plot <- data.frame(midpoint_distance_x)
 
@@ -74,7 +80,6 @@ ggsave("wiener_process_01.pdf",
 
 data_plot1 <- data.frame(midpoint_distance_x)
 
-
 X_simulation <- function(n_sim, tau){
   for(j in 1:n_sim){
     #We start with W(0) = 0
@@ -117,9 +122,3 @@ g1
 ggsave("wiener_process_1.pdf",
        plot = g1)
 g
-
-#For sampling from GMRF priors
-#L <- chol(tau*Q1D)
-#v <- matrix(rnorm(k*m,mean=0,sd=1), k, m) 
-#samps   <- solve(L,v)
-#plot(gene$coal_times, samps[,1], type = 'l')
