@@ -4,8 +4,9 @@ library(ggplot2)
 library(latex2exp)
 library(Matrix)
 library(cowplot)
+library(INLA)
 
-tau <- 0.1
+tau1 <- 1
 
 trajectory = exp_traj
 samp_times = 0
@@ -30,95 +31,48 @@ diag <- c(gene_intercoal1[1], gene_intercoal1[1:(k-2)] + gene_intercoal1[2:(k-1)
 Mdiag <- Diagonal(x = diag)
 Q1D <- Mdiag - sparseMatrix(i= seq(from = 2, to = k, by = 1), j = seq(from = 1, to = (k-1), by = 1), x= gene_intercoal1[1:k-1], dims=c(k, k), symmetric=TRUE)
 
-#For sampling from GMRF priors
-L <- chol(tau*Q1D)
-v <- matrix(rnorm(k*(k-1),mean=0,sd=1), k, k-1) 
-samps   <- solve(t(L),v)
-plot(midpoint_distance_x, samps[,1], type = 'l')
 
 data_plot <- data.frame(midpoint_distance_x)
 
-#Wiener Process
-X_simulation <- function(n_sim, tau){
-  for(j in 1:n_sim){
-  #We start with W(0) = 0
+
+X_simulation <- function(tau){
+  #theta0 <- runif(1, -10, 10) #diffuse or non-informative prior
+  theta1 <- rnorm(1, 0, 1/sqrt(tau1))
   #Preallocate arrays
   dX <- rep(0, k-1)
   X <- rep(0, k)
   var <- 0
+  X[1] <- theta1
   
   for (i in 2:k){
     var <- midpoint_distance[i-1]/tau
     dX[i-1] <- rnorm(1, mean = 0, sd = sqrt(var))
     X[i] <- X[i-1] + dX[i-1]
   }
-  data_plot$y = X
-  names(data_plot)[j+1] <- paste("X", j, sep="")
-  }
-  return(data_plot)
+  return(X)
 }
 
-#Plotting 5 realizations of the process
-data_plot <- X_simulation(10, tau)
-g <- ggplot(data = data_plot, aes(x = midpoint_distance_x)) +
- geom_line(aes(y = X1)) +
-  geom_line(aes(y = X2)) +
-  geom_line(aes(y = X3)) +
-  geom_line(aes(y = X4)) +
-  geom_line(aes(y = X5)) +
-  geom_line(aes(y = X6)) +
-  geom_line(aes(y = X7)) +
-  geom_line(aes(y = X8)) +
-  geom_line(aes(y = X9)) +
-  geom_line(aes(y = X10)) +
-  theme_bw() +
-  ggtitle(TeX("$\\tau = 0.1")) +
-  xlab("") + ylab("")
+#Simulation
+nrep <- 1000
+simulations <- do.call(rbind, lapply(1:nrep, function(i){
+  data.frame(x_value = midpoint_distance_x, value = X_simulation(tau = tau1), replicate = i, 
+             group = c(1:99))
+}))
 
-ggsave("wiener_process_01.pdf",
-       plot = g)
-
-data_plot1 <- data.frame(midpoint_distance_x)
-
-X_simulation <- function(n_sim, tau){
-  for(j in 1:n_sim){
-    #We start with W(0) = 0
-    #Preallocate arrays
-    dX <- rep(0, k-1)
-    X <- rep(0, k)
-    var <- 0
-    
-    for (i in 2:k){
-      var <- midpoint_distance[i-1]/tau
-      dX[i-1] <- rnorm(1, mean = 0, sd = sqrt(var))
-      X[i] <- X[i-1] + dX[i-1]
-    }
-    data_plot1$y = X
-    names(data_plot1)[j+1] <- paste("X", j, sep="")
-  }
-  return(data_plot1)
-}
-
-#Plotting for a different value of tau
-tau1 <- 1
-data_plot1 <- X_simulation(10, tau1)
-g1 <- ggplot(data = data_plot1, aes(x = midpoint_distance_x)) +
-  geom_line(aes(y = X1)) +
-  geom_line(aes(y = X2)) +
-  geom_line(aes(y = X3)) +
-  geom_line(aes(y = X4)) +
-  geom_line(aes(y = X5)) +
-  geom_line(aes(y = X6)) +
-  geom_line(aes(y = X7)) +
-  geom_line(aes(y = X8)) +
-  geom_line(aes(y = X9)) +
-  geom_line(aes(y = X10)) +
+#Plotting
+#for_plot$replicate <- as.factor(for_plot$replicate)
+options(repr.plot.width = 10, repr.plot.height = 7)
+plot_simulation <- ggplot(data = simulations, aes(x = x_value, y = value, group = replicate)) +
+  scale_x_continuous("Times", expand = c(0,0)) +
+  scale_y_continuous("", expand = c(0,0)) +
+  geom_line(alpha = .5) + 
+  guides(col = "none") +
   theme_bw() +
   ggtitle(TeX("$\\tau = 1")) +
-  xlab("") + ylab("")
+  NULL
 
-g1
+plot_simulation
 
-ggsave("wiener_process_1.pdf",
-       plot = g1)
-g
+#Mean
+mean <- aggregate(.~group,data=simulations,FUN=sum)
+plot(midpoint_distance_x, mean$value/99, type = 'l')

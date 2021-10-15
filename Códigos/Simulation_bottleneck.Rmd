@@ -48,11 +48,10 @@ genealogies_200taxa <- lapply(1:n.sim, function(i){
 
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
-    BNPR(data = x, lengthout =100))
+    BNPR(data = x, lengthout =100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
-#Gamma 2 (olhar o nome)
-#The par found in the optimization problem
+#Gamma 2
 par_ab <- c(2.544882, 1.203437)
 system.time(
   reconstructions_20taxa_gamma2 <- lapply(genealogies_20taxa, function(x)
@@ -102,6 +101,7 @@ summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
              prior = "Gumbel", ntaxa = "20")
+}))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gamma[[i]]$summary,

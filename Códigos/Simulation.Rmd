@@ -45,11 +45,10 @@ genealogies_200taxa <- lapply(1:nrep, function(i){
 #Phylodynamic reconstruction of effective population size - 20 taxa
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
-    BNPR(data = x, lengthout =100))
+    BNPR(data = x, lengthout =100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
-#Gamma 2 (olhar o nome)
-#The par found in the optimization problem
+#Gamma 2
 par_ab <- c(2.544882, 1.203437)
 system.time(
   reconstructions_20taxa_gamma2 <- lapply(genealogies_20taxa, function(x)
@@ -65,21 +64,19 @@ system.time(
 
 ```{r}
 #Phylodynamic reconstruction of effective population size - 200 taxa
-#Coincident sampling event and coalescent event: results may be unpredictable.  What it means?
-
 system.time(
   reconstructions_200taxa_gamma <- lapply(genealogies_200taxa, function(x)
     BNPR(data = x, lengthout = 100))
 )
 
-#Gamma 2 (olhar o nome)
-#The par found in the optimization problem
+#Gamma 2
 par_ab <- c(2.544882, 1.203437)
 system.time(
   reconstructions_200taxa_gamma2 <- lapply(genealogies_200taxa, function(x)
     BNPR(data = x, lengthout =100, prec_alpha = par_ab[1], prec_beta = 1/par_ab[2]))
 )
 
+#PC prior
 system.time(
   reconstructions_200taxa_gumbel <- lapply(genealogies_200taxa, function(x)
     BNPR(data = x, lengthout = 100, 
@@ -101,11 +98,9 @@ for (k in 1:5) {
           heatmap_labels_side = "left")
 }
 ```
+
 Plotting random individuals simulations for 200 taxa: 
 ```{r}
-set.seed(9)
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
@@ -115,11 +110,33 @@ for (k in 1:5) {
 }
 
 ```
-```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
 
+Gamma 2
+Plotting five random individuals simulations for 20 taxa:
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
+
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma2[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+
+```
+
+PC prior
+```{r}
 for (k in 1:5) {
   plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
@@ -130,10 +147,6 @@ for (k in 1:5) {
 ```
 
 ```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
@@ -143,38 +156,45 @@ for (k in 1:5) {
 }
 ```
 
-
-Calculating the percent error:
+Calculating performance metrics:
 
 ```{r}
 #20 taxa
 
 errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+
 errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
-#O que width faz?
+#Widths
 widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
 
 widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
 
 #200 taxa
 errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
 errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
-
 
 #Width 200taxa
 widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
 
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+
 widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
 
 errors_dt <- data.frame(
-  bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, errors_gumbel_200taxa),
-  widths = c(widths_gamma_20taxa, widths_gamma_200taxa, widths_gumbel_20taxa, widths_gumbel_200taxa),
+  bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gamma2_20taxa, errors_gamma2_200taxa,
+           errors_gumbel_200taxa, errors_gumbel_200taxa),
+  widths = c(widths_gamma_20taxa, widths_gamma2_20taxa, widths_gamma_200taxa, widths_gamma2_200taxa, 
+             widths_gumbel_20taxa, widths_gumbel_200taxa),
   ntaxa = rep(c("20", "200"), 2*nrep),
-  prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
+  prior = rep(c("Gamma 1", "Gamma 2", "Gumbel"), each = 2*nrep)
 )
 ```
 
@@ -212,8 +232,6 @@ pw
 ```
 
 ```{r}
-#do.call constructs and executes a function call from a name or a function and a list of arguments to be passed to it.
-
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
              prior = "Gamma", ntaxa = "20")
@@ -240,11 +258,6 @@ all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
 
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
-```
-
-Saving data frames in a txt file:
-```{r}
-
 ```
 
 
@@ -293,9 +306,3 @@ p <- ggplot(data = for_plot, aes(x = prior, y = sd, col = prior, fill = prior)) 
 
 p
 ```
-Plotting an individual random simulation:
-
-```{r}
-
-```
-

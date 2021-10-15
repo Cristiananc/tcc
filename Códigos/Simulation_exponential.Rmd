@@ -10,7 +10,6 @@ library(phylodyn)
 date_min <- 1990
 date_max <- 2021
 
-#Explicar como a trajetória é ao contrário
 trajectory_exponential <- function(t, scale = 1, rate = 1/10){
     return(scale * exp(- (t - 1990) * rate))
 }
@@ -38,15 +37,15 @@ genealogies_200taxa <- lapply(1:n.sim, function(i){
 })
 ```
 
-```{r}
+```{r, verbose = TRUE}
 #Gamma 1
 #Verificar qual o alpha e beta dessa reconstrução
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
-    BNPR(data = x, lengthout =100))
+    BNPR(data = x, lengthout =100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
-#Gamma 2 (olhar o nome)
+#Gamma 2
 #The par found in the optimization problem
 par_ab <- c(2.544882, 1.203437)
 system.time(
@@ -65,13 +64,19 @@ system.time(
 ```{r}
 #Phylodynamic reconstruction of effective population size  200 taxa
 
-#Gamma
+#Gamma 1
 system.time(
   reconstructions_200taxa_gamma <- lapply(genealogies_200taxa, function(x)
-    BNPR(data = x, lengthout = 100))
+    BNPR(data = x, lengthout = 100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
 #Gamma 2
+par_ab <- c(2.544882, 1.203437)
+system.time(
+  reconstructions_20taxa_gamma2 <- lapply(genealogies_20taxa, function(x)
+    BNPR(data = x, lengthout =100, prec_alpha = par_ab[1], prec_beta = 1/par_ab[2]))
+)
+
 
 #PC prior
 system.time(
@@ -84,9 +89,15 @@ system.time(
 ```
 
 ```{r}
+#Summaries gamma 20 taxa
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
-             prior = "Gamma", ntaxa = "20")
+             prior = "Gamma 1", ntaxa = "20")
+}))
+
+summaries_gamma_20taxa2 <- do.call(rbind, lapply(1:n.sim, function(i){
+  data.frame(reconstructions_20taxa_gamma2[[i]]$summary, replicate = i, 
+             prior = "Gamma 2", ntaxa = "20")
 }))
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
@@ -96,8 +107,14 @@ summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gamma[[i]]$summary,
-             replicate = i, prior = "Gamma", ntaxa = "200")
+             replicate = i, prior = "Gamma 1", ntaxa = "200")
 }))
+
+summaries_gamma_200taxa2 <- do.call(rbind, lapply(1:n.sim, function(i){
+  data.frame(reconstructions_200taxa_gamma2[[i]]$summary,
+             replicate = i, prior = "Gamma 2", ntaxa = "200")
+}))
+
 
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
@@ -105,7 +122,9 @@ summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
              prior = "Gumbel", ntaxa = "200")
 }))
 
-all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
+all_estimates <- rbind(summaries_gamma_20taxa, summaries_gamma_20taxa2,
+                       summaries_gumbel_20taxa,
+                       summaries_gamma_200taxa2,
                        summaries_gamma_200taxa, summaries_gumbel_200taxa)
 
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
@@ -151,9 +170,6 @@ for (k in 1:5) {
 
 Plotting random individuals simulations for 200 taxa: 
 ```{r}
-set.seed(9)
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
@@ -164,11 +180,32 @@ for (k in 1:5) {
 
 ```
 
+Gamma 2
+Plotting five random individuals simulations for 20 taxa:
 ```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
 
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma2[[random_numbers[k]]], traj = const10,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+
+```
+
+
+```{r}
 for (k in 1:5) {
   plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
@@ -179,10 +216,6 @@ for (k in 1:5) {
 ```
 
 ```{r}
-set.seed(9)
-#111  13 104 108 221
-random_numbers <- sample(1:500, 5)
-
 for (k in 1:5) {
   plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
