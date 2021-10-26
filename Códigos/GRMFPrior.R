@@ -63,33 +63,47 @@ X_simulation <- function(tau, gamma0_prior){
 nrep <- 100
 p <- list()
 tau <- c(10^(-2), 10^(-1), 1, 10)
-priors <- 
+df_simulations <- data.frame()
 for(l in 0:4){
   for (j in 1:4){
 simulations <- do.call(rbind, lapply(1:nrep, function(i){
       data.frame(x_value = midpoint_distance_x, 
                value = X_simulation(tau = tau[j], gamma0_prior = l + 1), 
                replicate = i, 
-               group = c(1:99))
+               group = c(1:99),
+               prior = l,
+               tau = tau[j])
     }))
-    p[[4*l + j]] <- ggplot(data = simulations, aes(x = x_value, y = value, 
-                                             group = replicate)) +
-      scale_x_continuous("Times", expand = c(0,0)) +
-      scale_y_continuous("", expand = c(0,0)) +
-      geom_line(alpha = .5) + 
-      guides(col = "none") +
-      theme_bw() +
-      ggtitle(TeX("$\\tau =$"), tau[j]) +
-      NULL
+df_simulations <- rbind(df_simulations, simulations)
   }
 }
 
 #Plotting
 require(gridExtra)
 options(repr.plot.width = 10, repr.plot.height = 7)
-do.call("grid.arrange", c(p[c(seq(1,12))], ncol=4)) 
-do.call("grid.arrange", c(p[c(seq(13,20))], ncol=4)) 
 
+#Escalas individuais no eixo y
+ggplot(data = df_simulations, aes(x = x_value, y = value, 
+                                  group = replicate)) +
+  scale_x_continuous("Times", expand = c(0,0)) +
+  scale_y_continuous("", expand = c(0,0)) +
+  geom_line(alpha = .5) + 
+  guides(col = "none") +
+  theme_bw() +
+  #ggtitle(TeX("$\\tau =$")) +
+  facet_wrap(prior ~ tau, ncol = 4, scales = "free_y")
+
+#Esclas fixas para o eixo y
+ggplot(data = df_simulations, aes(x = x_value, y = value, 
+                                  group = replicate)) +
+  scale_x_continuous("Times", expand = c(0,0)) +
+  scale_y_continuous("", expand = c(0,0)) +
+  geom_line(alpha = .5) + 
+  guides(col = "none") +
+  theme_bw() +
+  #ggtitle(TeX("$\\tau =$")) +
+  facet_wrap(prior ~ tau, ncol = 4) +
+  ylim(10^(-5), 10^5)
 
 #Mean
 mean <- aggregate(.~group,data=simulations,FUN=sum)
