@@ -15,6 +15,7 @@ n = 100
 #Simulating a genealogy based on the sample
 gene = coalsim(samp_times = samp_times, n_sampled = n,
                traj = trajectory, lower_bound = 1/10)
+
 k <- n - 1
 
 midpoint_distance <- (gene$intercoal_times[1:k-1] + gene$intercoal_times[2:k])/2
@@ -60,10 +61,13 @@ X_simulation <- function(tau, gamma0_prior){
 }
 
 #Simulation for each prior
-nrep <- 100
+nrep <- 1000
 p <- list()
 tau <- c(10^(-2), 10^(-1), 1, 10)
 df_simulations <- data.frame()
+prior_names <- c('0', 'N(0, 1/sqrt(tau))', 'Uniform',
+                 'N(0, 10^6)', 
+                 'N(u, 10^6) u~Cauchy(0, 1)')
 for(l in 0:4){
   for (j in 1:4){
 simulations <- do.call(rbind, lapply(1:nrep, function(i){
@@ -71,7 +75,7 @@ simulations <- do.call(rbind, lapply(1:nrep, function(i){
                value = X_simulation(tau = tau[j], gamma0_prior = l + 1), 
                replicate = i, 
                group = c(1:99),
-               prior = l,
+               prior = prior_names[l + 1],
                tau = tau[j])
     }))
 df_simulations <- rbind(df_simulations, simulations)
@@ -91,9 +95,9 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   guides(col = "none") +
   theme_bw() +
   #ggtitle(TeX("$\\tau =$")) +
-  facet_wrap(prior ~ tau, ncol = 4, scales = "free_y")
+  facet_grid(prior ~ tau, scales = "free_y")
 
-#Esclas fixas para o eixo y
+#Escala log para o eixo y
 ggplot(data = df_simulations, aes(x = x_value, y = value, 
                                   group = replicate)) +
   scale_x_continuous("Times", expand = c(0,0)) +
@@ -102,8 +106,9 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   guides(col = "none") +
   theme_bw() +
   #ggtitle(TeX("$\\tau =$")) +
-  facet_wrap(prior ~ tau, ncol = 4) +
-  ylim(10^(-5), 10^5)
+  scale_y_continuous(trans=scales::pseudo_log_trans(base = 10),
+                     breaks = c(-10^(6), -10^4,-10^(2), 10^(0), 10^2, 10^4, 10^6)) +
+  facet_grid(prior ~ tau)
 
 #Mean
 mean <- aggregate(.~group,data=simulations,FUN=sum)
