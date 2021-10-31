@@ -2,10 +2,13 @@
 library(phylodyn)
 library(ggplot2)
 library(latex2exp)
-library(Matrix)
-library(cowplot)
 library(INLA)
 library(gridExtra)
+library(VaRES)
+
+#Parameters for the precision prior
+gamma2 <- c(2.544882, 1.203437)
+pc_prior <- c(0.5, 2.302585)
 
 set.seed(9)
 trajectory = exp_traj
@@ -20,30 +23,31 @@ k <- n - 1
 
 midpoint_distance <- (gene$intercoal_times[1:k-1] + gene$intercoal_times[2:k])/2
 
-#Precision Matrix
-gene_intercoal1 <- replicate(k-1, 1)/midpoint_distance
-
 midpoint_distance_x <- rep(0, k)
 for(i in 2:k){
   midpoint_distance_x[i] = midpoint_distance[i-1] + midpoint_distance_x[i-1]
 }
 
-diag <- c(gene_intercoal1[1], gene_intercoal1[1:(k-2)] + gene_intercoal1[2:(k-1)], gene_intercoal1[k-1])
-Mdiag <- Diagonal(x = diag)
-Q1D <- Mdiag - sparseMatrix(i= seq(from = 2, to = k, by = 1), j = seq(from = 1, to = (k-1), by = 1), x= gene_intercoal1[1:k-1], dims=c(k, k), symmetric=TRUE)
+#Draw a random value for tau until it's different of zero
+random_tau <- function(tau_prior) {
+  success <- FALSE
+  
+  if (tau_prior == 1){
+    x <- rgamma(1, shape = 0.001, rate = 0.001)
+    }
+  if (tau_prior == 2){
+      x <- rgamma(1, shape = gamma2[1], scale = gamma2[2])
+    }    
+  if(tau_prior == 3){
+      x <- dgumbel2(1, a = pc_prior[1], b = pc_prior[2])
+    }    
+  return(x)
+}
 
-data_plot <- data.frame(midpoint_distance_x)
-
-#Run the simulation for a fixed tau and a certain prior for gamma0
-#The different priors for gamma0 are the following:
-# normal0 -> rnorm(1, 0, 1/sqrt(tau1))
-# unif -> runif(1, -10, 10) 
-# zero -> gamma0 starts with zero
-# normal1 -> Normal(0, sd = 10^6)
-# normal2 -> Normal(u0, sd = 10^6) where u0 ~ Cauchy(0, 1)
-
-X_simulation <- function(tau, gamma0_prior){
+#Run the simulation a given tau and gamma0 priors
+X_simulation <- function(gamma0_prior, tau_prior){
   u0 <- rcauchy(1, location = 0, scale = 1)
+  tau <- random_tau(tau_prior)
   prior <- list(0, rnorm(1, 0, 1/sqrt(tau)), runif(1, -10, 10), rnorm(1, 0, 10^(6)), rnorm(1, u0, 10^(6)))
   
   #Preallocate arrays
@@ -51,33 +55,38 @@ X_simulation <- function(tau, gamma0_prior){
   X <- rep(0, k)
   var <- 0
   X[1] <- prior[[gamma0_prior]]
-  
+
   for (i in 2:k){
     var <- midpoint_distance[i-1]/tau
+    if (var)
     dX[i-1] <- rnorm(1, mean = 0, sd = sqrt(var))
+    #ERROR nans produced when var = Inf
+    if (var == Inf){
+      var <- .Machine$double.xmax
+    }
     X[i] <- X[i-1] + dX[i-1]
   }
   return(X)
 }
 
-#Simulation for each prior
-nrep <- 100
-tau <- c(10^(-2), 10^(-1), 1, 10)
+#Simulation for each type of precision prior and gamma0 prior
+nrep <- 10000
 df_simulations <- data.frame()
 prior_names <- c('0', 'N(0, 1/sqrt(tau))', 'Uniform',
                  'N(0, 10^6)', 
                  'N(u, 10^6) u~Cauchy(0, 1)')
+prior_tau_names <- c('Gamma usual', 'Gamma2', 'PC prior')
 
 simulation_for_each_prior <- function (nrep){
-  for(l in 0:4){
-    for (j in 1:4){
+  for(l in 1:5){
+    for (j in 1:3){
       simulations <- do.call(rbind, lapply(1:nrep, function(i){
         data.frame(x_value = midpoint_distance_x, 
-                   value = X_simulation(tau = tau[j], gamma0_prior = l + 1), 
+                   value = X_simulation(gamma0_prior = l, tau_prior = j), 
                    replicate = i, 
                    group = c(1:99),
-                   prior = prior_names[l + 1],
-                   tau = tau[j])
+                   prior = prior_names[l],
+                   tau = prior_tau_names[j])
       }))
       df_simulations <- rbind(df_simulations, simulations)
     }
@@ -103,7 +112,7 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   #ggtitle(TeX("$\\tau =$")) +
   facet_grid(prior ~ tau, scales = "free_y")
 
-#Escala log para o eixo y
+#Escala pseudolog
 ggplot(data = df_simulations, aes(x = x_value, y = value, 
                                   group = replicate)) +
   scale_x_continuous("Times", expand = c(0,0)) +
@@ -112,10 +121,6 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   guides(col = "none") +
   theme_bw() +
   #ggtitle(TeX("$\\tau =$")) +
-  scale_y_continuous(trans=scales::pseudo_log_trans(base = 10),
-                     breaks = c(-10^(6), -10^4,-10^(2), 10^(0), 10^2, 10^4, 10^6)) +
+  scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
   facet_grid(prior ~ tau)
 
-#Mean
-mean <- aggregate(.~group,data=simulations,FUN=sum)
-plot(midpoint_distance_x, mean$value/99, type = 'l')

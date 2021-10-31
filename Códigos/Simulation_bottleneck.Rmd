@@ -70,7 +70,7 @@ system.time(
 
 system.time(
   reconstructions_200taxa_gamma <- lapply(genealogies_200taxa, function(x)
-    BNPR(data = x, lengthout = 100))
+    BNPR(data = x, lengthout = 100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
 #Gamma 2 (olhar o nome)
