@@ -70,7 +70,7 @@ X_simulation <- function(gamma0_prior, tau_prior){
 }
 
 #Simulation for each type of precision prior and gamma0 prior
-nrep <- 10000
+nrep <- 1000
 df_simulations <- data.frame()
 prior_names <- c('0', 'N(0, 1/sqrt(tau))', 'Uniform',
                  'N(0, 10^6)', 
