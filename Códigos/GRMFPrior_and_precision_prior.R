@@ -112,7 +112,7 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   #ggtitle(TeX("$\\tau =$")) +
   facet_grid(prior ~ tau, scales = "free_y")
 
-#Escala pseudolog
+#Pseudolog scale
 ggplot(data = df_simulations, aes(x = x_value, y = value, 
                                   group = replicate)) +
   scale_x_continuous("Times", expand = c(0,0)) +
@@ -124,3 +124,16 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
   facet_grid(prior ~ tau)
 
+#Removing the gamma(shape = 0.001, rate = 0.001 )
+df_simulations_without_gamma_usual <- df_simulations[df_simulations$tau != "Gamma usual", ]
+
+#Escalas individuais no eixo y
+ggplot(data = df_simulations_without_gamma_usual, aes(x = x_value, y = value, 
+                                  group = replicate)) +
+  scale_x_continuous("Times", expand = c(0,0)) +
+  scale_y_continuous("", expand = c(0,0)) +
+  geom_line(alpha = .5) + 
+  guides(col = "none") +
+  theme_bw() +
+  #ggtitle(TeX("$\\tau =$")) +
+  facet_grid(prior ~ tau, scales = "free_y")
