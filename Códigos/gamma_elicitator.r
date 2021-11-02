@@ -39,3 +39,8 @@ mean(sds > SS)
 hist(precisions)
 
 the.pars
+
+#Pr(tau > 10^-5) = 10^-4 
+aux1 <- 1/sqrt(10^(-5)) 
+aux2 <- 10^(-5)
+get_gamma_pars(S = aux1, p = aux2)
