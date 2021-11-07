@@ -7,12 +7,17 @@ output: html_notebook
 library(ggplot2)
 library(phylodyn)
 
+set.seed(29)
+
 date_min <- 1990
 date_max <- 2021
 
 trajectory_exponential <- function(t, scale = 1, rate = 1/10){
     return(scale * exp(- (t - 1990) * rate))
 }
+
+#Plotting the trajectory
+plot(trajectory_exponential(seq(1990, 2021)), type = 'l')
 
 n.sim <- 500 # number of simulations
 

@@ -48,3 +48,6 @@ plot_BNPR(results2, col = rgb(0.829, 0.680, 0.306),
 
 plot_BNPR(results3, col = rgb(0.829, 0.680, 0.306),
           heatmap_labels_side = "left", traj = cyclic_traj)
+
+tree = sample_tree(regional_flu$USACanada)
+plot(tree)
