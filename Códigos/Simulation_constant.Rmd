@@ -161,7 +161,6 @@ Calculating performance metrics:
 
 ```{r}
 #20 taxa
-
 errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
 
 errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))

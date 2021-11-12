@@ -6,10 +6,11 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(phylodyn)
-library(gridExtra) # combining plots
 
 date_min <- 1990
 date_max <- 2021
+
+set.seed(29)
 
 trajectory_bottleneck <- function(t){
     result = rep(0, length(t))
@@ -18,6 +19,8 @@ trajectory_bottleneck <- function(t){
     result[t >= 2021] <- 10
     return(result)
 }
+
+plot(trajectory_bottleneck(seq(1990, 2021)), type = 'l')
 
 n.sim <- 500 # number of simulations
 
@@ -31,7 +34,11 @@ genealogies_20taxa <- lapply(1:n.sim, function(i){
                     lower_bound = 1)
 })
 
+tree20 <- sample_tree(genealogies_20taxa[[1]])
+plot(tree20)
+```
 
+```{r}
 #200 taxa
 stimes200 <- sort(runif(200, date_min, date_max))
 
@@ -41,17 +48,19 @@ genealogies_200taxa <- lapply(1:n.sim, function(i){
                     traj = trajectory_bottleneck,
                     lower_bound = 1)
 })
+
+tree200 <- sample_tree(genealogies_200taxa[[1]])
+plot(tree200)
 ```
 
 ```{r}
 #Phylodynamic reconstruction of effective population size  20 taxa
-
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
-    BNPR(data = x, lengthout =100, prec_alpha = 0.001, prec_beta = 0.001))
+    BNPR(data = x, lengthout = 100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
-#Gamma 2
+#Matching Gamma
 par_ab <- c(2.544882, 1.203437)
 system.time(
   reconstructions_20taxa_gamma2 <- lapply(genealogies_20taxa, function(x)
@@ -61,8 +70,7 @@ system.time(
 system.time(
   reconstructions_20taxa_gumbel <- lapply(genealogies_20taxa, function(x)
     BNPR(data = x, lengthout = 100, 
-         pc_prior = TRUE))
-)
+         pc_prior = TRUE)))
 ```
 
 ```{r}
@@ -91,12 +99,11 @@ system.time(
 ```{r}
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
-             prior = "Gamma", ntaxa = "20")}))
+             prior = "Gamma Flat", ntaxa = "20")}))
 
-summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
-  data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
-             prior = "Gumbel", ntaxa = "20")
-}))
+summaries_gamma2_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
+  data.frame(reconstructions_20taxa_gamma2[[i]]$summary, replicate = i,
+             prior = "Gamma2", ntaxa = "20")}))
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
@@ -104,8 +111,13 @@ summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 }))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
+  data.frame(reconstructions_200taxa_gamma2[[i]]$summary,
+             replicate = i, prior = "Gamma Flat", ntaxa = "200")
+}))
+
+summaries_gamma2_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gamma[[i]]$summary,
-             replicate = i, prior = "Gamma", ntaxa = "200")
+             replicate = i, prior = "Gamma2", ntaxa = "200")
 }))
 
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
