@@ -8,16 +8,16 @@ library(ggplot2)
 library(phylodyn)
 require(rlist)
 
-date_min <- 1990
-date_max <- 2021
+date_present <- 0
+date_max <- 31
 
 set.seed(29)
 
 trajectory_bottleneck <- function(t){
     result = rep(0, length(t))
-    result[t <= 2005] <- 10
-    result[t > 2005 & t < 2021] <- 1
-    result[t >= 2021] <- 10
+    result[t <= 15] <- 10
+    result[t > 15 & t < 31] <- 1
+    result[t >= 31] <- 10
     return(result)
 }
 
