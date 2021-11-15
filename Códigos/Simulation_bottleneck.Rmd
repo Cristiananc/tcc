@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(phylodyn)
+require(rlist)
 
 date_min <- 1990
 date_max <- 2021
@@ -54,6 +55,9 @@ plot(tree200)
 ```
 
 ```{r}
+#Saving the reconstructions lists:
+#list.save(reconstructions_20taxa_gamma, 'list.rdata')
+
 #Phylodynamic reconstruction of effective population size  20 taxa
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
@@ -81,7 +85,7 @@ system.time(
     BNPR(data = x, lengthout = 100, prec_alpha = 0.001, prec_beta = 0.001))
 )
 
-#Gamma 2 (olhar o nome)
+#Matching gamma
 #The par found in the optimization problem
 par_ab <- c(2.544882, 1.203437)
 system.time(
@@ -97,13 +101,30 @@ system.time(
 ```
 
 ```{r}
+#Loading data 
+reconstructions_20taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gumbel.rdata")
+
+reconstructions_20taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gamma.rdata")
+
+reconstructions_20taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gamma2.rdata")
+
+reconstructions_200taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gamma.rdata")
+
+reconstructions_200taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gamma2.rdata")
+
+reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gumbel.rdata")
+```
+
+
+
+```{r}
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
              prior = "Gamma Flat", ntaxa = "20")}))
 
 summaries_gamma2_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma2[[i]]$summary, replicate = i,
-             prior = "Gamma2", ntaxa = "20")}))
+             prior = "Matching Gamma", ntaxa = "20")}))
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
@@ -111,13 +132,13 @@ summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 }))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
-  data.frame(reconstructions_200taxa_gamma2[[i]]$summary,
+  data.frame(reconstructions_200taxa_gamma[[i]]$summary,
              replicate = i, prior = "Gamma Flat", ntaxa = "200")
 }))
 
 summaries_gamma2_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
-  data.frame(reconstructions_200taxa_gamma[[i]]$summary,
-             replicate = i, prior = "Gamma2", ntaxa = "200")
+  data.frame(reconstructions_200taxa_gamma2[[i]]$summary,
+             replicate = i, prior = "Matching Gamma", ntaxa = "200")
 }))
 
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
@@ -126,13 +147,202 @@ summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
              prior = "Gumbel", ntaxa = "200")
 }))
 
-all_estimates <- rbind(summaries_gamma_20taxa, summaries_gumbel_20taxa,
-                       summaries_gamma_200taxa, summaries_gumbel_200taxa)
+all_estimates <- rbind(summaries_gamma_20taxa, summaries_gamma2_20taxa,
+                       summaries_gumbel_20taxa,
+                       summaries_gamma_200taxa, summaries_gamma2_200taxa,
+                       summaries_gumbel_200taxa)
 
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
 
 ```
+
+Plotting five random individuals simulations for 20 taxa:
+```{r}
+random_numbers <- sample(1:500, 5)
+
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+```
+
+
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'limegreen', 
+          heatmap_labels_side = "left")
+}
+```
+
+
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
+Plotting random individuals simulations for 200 taxa: 
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'coral', 
+          heatmap_labels_side = "left")
+}
+
+```
+
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gamma2[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'limegreen', 
+          heatmap_labels_side = "left")
+}
+```
+
+
+
+```{r}
+for (k in 1:5) {
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
+          main= paste("BNPR: Simulation", random_numbers[k]) , 
+          yscale = 1,
+          col = 'turquoise', 
+          heatmap_labels_side = "left")
+}
+```
+
+
+Calculating performance metrics:
+```{r}
+#Functions
+percent_bias <- function(aux){
+  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x)))
+}
+  
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+width <- function(x){
+  return((1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x)))
+}
+
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+#200 taxa
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+
+#Width 200taxa
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+
+errors_dt <- data.frame(
+  bias = c(errors_gamma_20taxa, errors_gamma_200taxa,
+           errors_gumbel_200taxa, errors_gumbel_200taxa,
+            errors_gamma2_20taxa, errors_gamma2_200taxa),
+  widths = c(widths_gamma_20taxa, widths_gamma_200taxa, 
+             widths_gumbel_20taxa, widths_gumbel_200taxa,
+             widths_gamma2_20taxa, widths_gamma2_200taxa),
+  ntaxa = rep(c(rep("20", n.sim), rep("200", n.sim)), 3),
+  prior = rep(c("Gamma Flat", "PC prior", "Matching Gamma"), each = 2*n.sim)
+)
+
+```
+
+
+```{r}
+#Percent bias
+pb <- ggplot(data = errors_dt, aes(x = prior, y = bias, fill= prior)) + 
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent bias") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pb
+```
+
+```{r}
+#Percent error
+pe <- ggplot(data = errors_dt, aes(x = prior, y = abs(bias), fill = prior)) +
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent error") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pe
+```
+
+```{r}
+pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
+  geom_boxplot(alpha = .2) +
+  scale_y_log10("Relative width of 95% BCI") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pw
+```
+
+```{r}
+#Plot desconsiderando os outliers
+
+#Percent bias without outliers
+pb1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = bias, fill= prior)) + 
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent bias") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pb1
+```
+
+```{r}
+#Percent error without outliers
+pe1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = abs(bias), fill= prior)) + 
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent error") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pe1
+```
+
 
 Plotting the effective population size:
 ```{r}
@@ -152,130 +362,4 @@ peffpop <- ggplot(data = for_plot) +
 peffpop
 #ggsave("effective_pop_mean_bottleneck.pdf",
 #       plot = peffpop)
-```
-
-Plotting five random individuals simulations for 20 taxa:
-```{r}
-set.seed(9)
-random_numbers <- sample(1:500, 5)
-
-ggplot(reconstructions_20taxa_gamma[[random_numbers[1]]]) + 
-  geom_line()
-for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
-          main= paste("BNPR: Simulation", random_numbers[k]) , 
-          yscale = 1,
-          col = 'coral', 
-          heatmap_labels_side = "left")
-}
-```
-
-Plotting random individuals simulations for 200 taxa: 
-```{r}
-for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
-          main= paste("BNPR: Simulation", random_numbers[k]) , 
-          yscale = 1,
-          col = 'coral', 
-          heatmap_labels_side = "left")
-}
-
-```
-
-```{r}
-for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
-          main= paste("BNPR: Simulation", random_numbers[k], "of 20 taxa using Gumbel prior") , 
-          yscale = 1,
-          col = 'turquoise', 
-          heatmap_labels_side = "left")
-}
-```
-
-
-```{r}
-for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
-          main= paste("BNPR: Simulation", random_numbers[k]) , 
-          yscale = 1,
-          col = 'turquoise', 
-          heatmap_labels_side = "left")
-}
-```
-
-
-
-Calculating the percent error:
-
-```{r}
-#20 taxa
-percent_error <- function(x){
-  return(100 * (1/date_max) * sum((x$effpop - 10)/10))
-}
-  
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
-
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
-
-#Size of the posterior BC:
-#20 taxa
-
-width <- function(x){
-  return((1/date_max) * sum((x$effpop975 - x$effpop025)/10))
-}
-
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, width(x)))
-
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, width(x)))
-
-#200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
-
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
-
-#Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, width(x)))
-
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, width(x)))
-
-errors_dt <- data.frame(
-  bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, errors_gumbel_200taxa),
-  widths = c(widths_gamma_20taxa, widths_gamma_200taxa, widths_gumbel_20taxa, widths_gumbel_200taxa),
-  ntaxa = rep(c("20", "200"), 2*nrep),
-  prior = rep(c("Gamma", "Gumbel"), each = 2*nrep)
-)
-```
-
-
-```{r}
-#Percent bias is
-pb <- ggplot(data = errors_dt, aes(x = prior, y = bias, fill= prior)) + 
-  geom_boxplot(alpha = .2) +
-  scale_y_continuous("Percent bias") +
-  geom_hline(yintercept = 0, linetype = "longdash") +
-  facet_grid(.~ ntaxa) +
-  theme_bw()
-pb
-```
-
-```{r}
-#Percent error is
-pe <- ggplot(data = errors_dt, aes(x = prior, y = abs(bias), fill = prior)) +
-  geom_boxplot(alpha = .2) +
-  scale_y_continuous("Percent error") +
-  geom_hline(yintercept = 0, linetype = "longdash") +
-  facet_grid(.~ ntaxa) +
-  theme_bw()
-
-pe
-```
-
-```{r}
-pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
-  geom_boxplot(alpha = .2) +
-  scale_y_log10("Relative width of 95% BCI") +
-  facet_grid(.~ ntaxa) +
-  theme_bw()
-
-pw
 ```
