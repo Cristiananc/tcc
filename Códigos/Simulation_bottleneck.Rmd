@@ -8,7 +8,7 @@ library(ggplot2)
 library(phylodyn)
 require(rlist)
 
-date_present <- 0
+date_min <- 0
 date_max <- 31
 
 set.seed(29)
@@ -21,7 +21,7 @@ trajectory_bottleneck <- function(t){
     return(result)
 }
 
-plot(trajectory_bottleneck(seq(1990, 2021)), type = 'l')
+plot(trajectory_bottleneck(seq(0, 31)), type = 'l') 
 
 n.sim <- 500 # number of simulations
 
@@ -53,10 +53,16 @@ genealogies_200taxa <- lapply(1:n.sim, function(i){
 tree200 <- sample_tree(genealogies_200taxa[[1]])
 plot(tree200)
 ```
+Loading genealogies
+```{r}
+genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_genealogies_20taxa.rdata")
+
+genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_genealogies_200taxa.rdata")
+```
+
 
 ```{r}
 #Saving the reconstructions lists:
-#list.save(reconstructions_20taxa_gamma, 'list.rdata')
 
 #Phylodynamic reconstruction of effective population size  20 taxa
 system.time(
