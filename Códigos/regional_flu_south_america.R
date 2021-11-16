@@ -20,7 +20,8 @@ all_results <- data.frame(
   effpop025 <- c(results_gamma_flat$effpop025, results_matching_gamma$effpop025, results_pc_prior$effpop025), 
   effpop <- c(results_gamma_flat$effpop, results_matching_gamma$effpop, results_pc_prior$effpop),
   Prior = rep(c("Gamma Flat", "Matching Gamma", "PC prior"), each = 100),
-  time <- c(results_gamma_flat$x, results_matching_gamma$x, results_pc_prior$x)
+  time <- c(results_gamma_flat$x, results_matching_gamma$x, results_pc_prior$x),
+  effpopmean <- c(results_gamma_flat$effpopmean, results_matching_gamma$effpopmean, results_pc_prior$effpopmean)
 )
 
 options(repr.plot.width = 10, repr.plot.height = 7)
@@ -31,5 +32,8 @@ peffpop <- ggplot(data = all_results) +
   theme_bw() +
   scale_x_reverse() +
   geom_ribbon(data = all_results, aes(x = time, ymin= effpop025, ymax= effpop975,
-                                      fill = Prior),alpha = 0.1)
+                                      fill = Prior),alpha = 0.1) +
+  geom_hline(yintercept = 1, linetype = "dotted")
+  
+
 peffpop

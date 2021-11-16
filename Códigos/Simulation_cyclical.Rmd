@@ -12,16 +12,9 @@ date_min <- 0
 date_max <- 31
 
 set.seed(29)
+trajectory_cyclic = cyclic_traj
 
-trajectory_bottleneck <- function(t){
-    result = rep(0, length(t))
-    result[t <= 15] <- 10
-    result[t > 15 & t < 31] <- 1
-    result[t >= 31] <- 10
-    return(result)
-}
-
-plot(trajectory_bottleneck(seq(0, 31)), type = 'l') 
+plot(trajectory_cyclic(seq(0, 31)), type = 'l') 
 
 n.sim <- 500 # number of simulations
 
@@ -31,7 +24,7 @@ stimes20 <- sort(runif(20, date_min, date_max))
 genealogies_20taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes20,
                     n_sampled = rep(1,20),
-                    traj = trajectory_bottleneck,
+                    traj = trajectory_cyclic,
                     lower_bound = 1)
 })
 
@@ -46,7 +39,7 @@ stimes200 <- sort(runif(200, date_min, date_max))
 genealogies_200taxa <- lapply(1:n.sim, function(i){
   phylodyn::coalsim(samp_times = stimes200,
                     n_sampled = rep(1,200),
-                    traj = trajectory_bottleneck,
+                    traj = trajectory_cyclic,
                     lower_bound = 1)
 })
 
@@ -55,9 +48,9 @@ plot(tree200)
 ```
 Loading genealogies
 ```{r}
-genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_genealogies_20taxa.rdata")
+genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_genealogies_20taxa.rdata")
 
-genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_genealogies_200taxa.rdata")
+genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_genealogies_200taxa.rdata")
 ```
 
 
@@ -168,7 +161,7 @@ Plotting five random individuals simulations for 20 taxa:
 random_numbers <- sample(1:500, 5)
 
 for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_20taxa_gamma[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'coral', 
@@ -179,7 +172,7 @@ for (k in 1:5) {
 
 ```{r}
 for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'limegreen', 
@@ -190,7 +183,7 @@ for (k in 1:5) {
 
 ```{r}
 for (k in 1:5) {
-  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_20taxa_gumbel[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'turquoise', 
@@ -201,7 +194,7 @@ for (k in 1:5) {
 Plotting random individuals simulations for 200 taxa: 
 ```{r}
 for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_200taxa_gamma[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'coral', 
@@ -212,7 +205,7 @@ for (k in 1:5) {
 
 ```{r}
 for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gamma2[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_200taxa_gamma2[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'limegreen', 
@@ -224,7 +217,7 @@ for (k in 1:5) {
 
 ```{r}
 for (k in 1:5) {
-  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_bottleneck,
+  plot_BNPR(reconstructions_200taxa_gumbel[[random_numbers[k]]], traj = trajectory_cyclic,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
           col = 'turquoise', 
@@ -237,38 +230,38 @@ Calculating performance metrics:
 ```{r}
 #Functions
 percent_bias <- function(aux){
-  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x)))
+  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x)))
 }
   
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
 width <- function(x){
-  return((1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x)))
+  return((1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x)))
 }
 
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
-widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
-errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
-widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa,
@@ -362,7 +355,7 @@ peffpop <- ggplot(data = for_plot) +
     facet_grid(ntaxa~prior, scales = "free_y") +
     guides(col = "none") +
     theme_bw() +
-    stat_function(fun = trajectory_bottleneck, colour = 'black') +
+    stat_function(fun = trajectory_cyclic, colour = 'black') +
     NULL
 
 peffpop
