@@ -10,15 +10,15 @@ require(rlist)
 
 set.seed(29)
 
-date_min <- 1990
-date_max <- 2021
+date_min <- 0
+date_max <- 31
 
 trajectory_exponential <- function(t, scale = 10, rate = 0.1){
-    return(scale * exp(- (t - 1990) * rate))
+    return(scale * exp(- t* rate))
 }
 
 #Plotting the trajectory
-plot(trajectory_exponential(seq(1990, 2021)), type = 'l')
+plot(trajectory_exponential(seq(0, 31)), type = 'l')
 
 n.sim <- 500 # number of simulations
 
@@ -97,10 +97,29 @@ system.time(
 #Matching Gamma
 par_ab <- c(2.544882, 1.203437)
 system.time(
-  reconstructions_20taxa_gamma2 <- lapply(genealogies_20taxa, function(x)
+  reconstructions_200taxa_gamma2 <- lapply(genealogies_200taxa, function(x)
     BNPR(data = x, lengthout =100, prec_alpha = par_ab[1], prec_beta = 1/par_ab[2]))
 )
 ```
+
+Saving data:
+```{r}
+
+```
+
+
+Loading data:
+```{r}
+
+```
+
+Loading genealogies:
+```{r}
+genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_genealogies_20taxa.rdata")
+
+genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_genealogies_200taxa.rdata")
+```
+
 
 ```{r}
 #Summaries gamma 20 taxa

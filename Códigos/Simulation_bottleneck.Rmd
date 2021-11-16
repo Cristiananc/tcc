@@ -242,7 +242,7 @@ percent_bias <- function(aux){
   
 errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
 
 errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
 
