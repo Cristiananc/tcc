@@ -14,7 +14,7 @@ plot_BNPR(results, col = rgb(0.829, 0.680, 0.306),
           heatmap_labels_side = "left")
 
 #Cyclic trajectory
-set.seed(9)
+set.seed(29)
 trajectory = cyclic_traj
 samp_times = sort(runif(100, 0, 20))
 n = rep(1,100)
