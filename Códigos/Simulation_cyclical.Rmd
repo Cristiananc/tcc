@@ -53,6 +53,13 @@ genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC part
 genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_genealogies_200taxa.rdata")
 ```
 
+Saving genealogies:
+```{r}
+list.save(genealogies_20taxa, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_genealogies_20taxa.rdata")
+
+list.save(genealogies_200taxa, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_genealogies_200taxa.rdata")
+
+```
 
 ```{r}
 #Saving the reconstructions lists:
@@ -112,6 +119,11 @@ reconstructions_200taxa_gamma <- list.load("/home/cristiana/Downloads/7º Perío
 reconstructions_200taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gamma2.rdata")
 
 reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gumbel.rdata")
+```
+
+Saving genealogies:
+```{r}
+
 ```
 
 

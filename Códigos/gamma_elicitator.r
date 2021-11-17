@@ -18,6 +18,8 @@ get_gamma_pars <- function(S, p){
   return(out)
 }
 
+solnl(X = NULL, objfun = NULL)
+
 SS <- 1
 pp <- .1
 
@@ -44,3 +46,26 @@ the.pars
 aux1 <- 1/sqrt(10^(-5)) 
 aux2 <- 10^(-5)
 get_gamma_pars(S = aux1, p = aux2)
+
+
+#Fazendo a otimização para o caso onde queremos que E[tau] = 1
+library(nloptr)
+
+#Restrição e função objetivo não lineares
+#Restrição igualdade
+local_opts <- list( "algorithm" = "NLOPT_LD_MMA", "xtol_rel" = 1.0e-15 )
+opts <- list( "algorithm"= "NLOPT_GN_ISRES",
+              "xtol_rel"= 1.0e-15,
+              "maxeval"= 1600000,
+              "local_opts" = local_opts,
+              "print_level" = 0 )
+
+res <- nloptr ( x0 = c(0.1, 0.1),
+               eval_f = loss,
+               lb = c(0, 0),
+               ub = c(10, 10),
+               eval_g_eq = eq,
+               opts = opts, S = S, p = p
+)
+
+#Perguntar sobre o exp(out)
