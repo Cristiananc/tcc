@@ -2,6 +2,12 @@
 ### Note that Pr(1/sqrt(tau) > S) = p can be written as
 #### Pr(tau < 1/S^2) = p
 #### here, tau ~ Gamma(shape = a, scale = b)
+library(ggplot2)
+library(nloptr)
+library(VaRES) #Gumbel2 distribution
+library(latex2exp)
+
+set.seed(29)
 
 loss <- function(par, S, p){
   a <- exp(par[1])
@@ -24,10 +30,23 @@ SS <- 1
 pp <- .1
 
 the.pars <- get_gamma_pars(S = SS, p = pp)
+pc_prior <- c(0.5, 2.302585)
 
+#Plots
 curve(dgamma(x, shape = the.pars[1],
              scale = the.pars[2]), 0, 10*SS,
       ylab = "Density")
+
+#Density plots
+ggplot() +
+  xlim(0, 10) +
+  geom_function(aes(colour = "Gamma Flat"), fun = dgamma, args = list(shape = 0.001, rate = 0.001)) +
+  geom_function(aes(colour = "PC Prior"), fun = dgumbel2, args = list(a = pc_prior[1], b = pc_prior[2])) +
+  geom_function(aes(colour = "Matching Gamma"), fun = dgamma, args = list(shape = the.pars[1], scale = the.pars[2])) +
+  theme_bw() +
+  xlab(TeX("$\\tau$")) +
+  ylab("Density") +
+  guides(colour=guide_legend(title="Priors"))
 
 precisions <- rgamma(n = 1E6,
             shape = the.pars[1],
@@ -48,8 +67,7 @@ aux2 <- 10^(-5)
 get_gamma_pars(S = aux1, p = aux2)
 
 
-#Fazendo a otimização para o caso onde queremos que E[tau] = 1
-library(nloptr)
+#Fazendo a otimização para o caso onde queremos que E[tau] = 1 usando nloptr
 
 #Restrição e função objetivo não lineares
 #Restrição igualdade
