@@ -33,7 +33,7 @@ peffpop <- ggplot(data = all_results) +
   scale_x_reverse() +
   geom_ribbon(data = all_results, aes(x = time, ymin= effpop025, ymax= effpop975,
                                       fill = Prior),alpha = 0.1) +
-  geom_hline(yintercept = 1, linetype = "dotted")
+  geom_hline(yintercept = 1, linetype = "dotted", color = "red")
   
 
 peffpop

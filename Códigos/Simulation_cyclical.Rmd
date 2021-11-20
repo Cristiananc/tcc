@@ -123,7 +123,11 @@ reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Perí
 
 Saving genealogies:
 ```{r}
+list.save(reconstructions_20taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma.rdata")
 
+list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma2.rdata")
+
+list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
 ```
 
 

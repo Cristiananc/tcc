@@ -10,8 +10,8 @@ library(latex2exp)
 set.seed(29)
 
 loss <- function(par, S, p){
-  a <- exp(par[1])
-  b <- exp(par[2])
+  a <- par[1]
+  b <- par[2]
   abs(
     pgamma(q = 1/S^2, shape = a, scale = b) - p
   )
@@ -23,8 +23,6 @@ get_gamma_pars <- function(S, p){
   out <- exp(opt$par)
   return(out)
 }
-
-solnl(X = NULL, objfun = NULL)
 
 SS <- 1
 pp <- .1
@@ -66,24 +64,31 @@ aux1 <- 1/sqrt(10^(-5))
 aux2 <- 10^(-5)
 get_gamma_pars(S = aux1, p = aux2)
 
-
 #Fazendo a otimização para o caso onde queremos que E[tau] = 1 usando nloptr
+eq <- function(par, S, p) {
+  par[1]*par[2] - 1
+}
 
 #Restrição e função objetivo não lineares
 #Restrição igualdade
 local_opts <- list( "algorithm" = "NLOPT_LD_MMA", "xtol_rel" = 1.0e-15 )
 opts <- list( "algorithm"= "NLOPT_GN_ISRES",
               "xtol_rel"= 1.0e-15,
-              "maxeval"= 1600000,
               "local_opts" = local_opts,
+              "maxeval"= 1600000,
               "print_level" = 0 )
 
 res <- nloptr ( x0 = c(0.1, 0.1),
                eval_f = loss,
                lb = c(0, 0),
-               ub = c(10, 10),
+               ub = c(100, 100),
                eval_g_eq = eq,
-               opts = opts, S = S, p = p
+               opts = opts, S = SS, p = pp
 )
 
-#Perguntar sobre o exp(out)
+solution <- res$solution
+
+#Gamma Flat(shape = 0.001, rate = 0.001)
+#Pr(1/sqrt(tau)>1)
+pgamma(q = 1, shape = 0.001, rate = 0.001)
+
