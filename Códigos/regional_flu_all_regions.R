@@ -5,7 +5,7 @@ library(ggpubr)
 data("regional_flu")
 set.seed(29)
 
-parameters <- c(2.544882, 1.203437)
+parameters <- c(1.13340147e+02, 1.00071471e-02) #c(2.544882, 1.203437)
 
 zero_dates <- list(USACanada = 2012.301, Europe = 2011.044, NorthChina = 2011.285,
                    JapanKorea = 2012.29, India = 2010.814, SouthChina = 2011.282,

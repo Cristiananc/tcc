@@ -9,17 +9,17 @@ library(latex2exp)
 
 set.seed(29)
 
+#Considerando 
 loss <- function(par, S, p){
-  a <- par[1]
-  b <- par[2]
+  a <- exp(par[1])
   abs(
-    pgamma(q = 1/S^2, shape = a, scale = b) - p
+    pgamma(q = 1/S^2, shape = a, scale = 1/a) - p
   )
 }
 
 get_gamma_pars <- function(S, p){
-  opt <- optim(par = c(0, 0), fn = loss,
-               S = S, p = p)
+  opt <- optim(par = c(0), fn = loss,
+               S = S, p = p, method = "Brent", lower = 0, upper = 100)
   out <- exp(opt$par)
   return(out)
 }

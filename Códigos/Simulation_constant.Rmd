@@ -9,8 +9,8 @@ library(phylodyn)
 
 set.seed(29)
 
-date_min <- 1990
-date_max <- 2021
+date_min <- 0
+date_max <- 31
 
 const10 <- function(x){
   return(rep(10, length(x)))
