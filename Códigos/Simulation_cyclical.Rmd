@@ -130,8 +130,6 @@ list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período
 list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
 ```
 
-
-
 ```{r}
 summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gamma[[i]]$summary, replicate = i,
