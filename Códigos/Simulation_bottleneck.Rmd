@@ -237,38 +237,38 @@ Calculating performance metrics:
 ```{r}
 #Functions
 percent_bias <- function(aux){
-  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x)))
+  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31])))
 }
   
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
 width <- function(x){
-  return((1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x)))
+  return((1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x)))
 }
 
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
-widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
-errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_bottleneck(aux$x))/trajectory_bottleneck(aux$x))))
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_bottleneck(aux$x[aux$x <= 31]))/trajectory_bottleneck(aux$x[aux$x <= 31]))))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
-widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_bottleneck(x$x))))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_bottleneck(x$x[x$x <= 31]))))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa,

@@ -29,6 +29,7 @@ pp <- .1
 
 the.pars <- get_gamma_pars(S = SS, p = pp)
 pc_prior <- c(0.5, 2.302585)
+matching_gamma_par <- c(2.544882, 1.203437)
 
 #Plots
 curve(dgamma(x, shape = the.pars[1],
@@ -40,8 +41,9 @@ ggplot() +
   xlim(0, 10) +
   geom_function(aes(colour = "Gamma Flat"), fun = dgamma, args = list(shape = 0.001, rate = 0.001)) +
   geom_function(aes(colour = "PC Prior"), fun = dgumbel2, args = list(a = pc_prior[1], b = pc_prior[2])) +
-  geom_function(aes(colour = "Matching Gamma"), fun = dgamma, args = list(shape = the.pars[1], scale = the.pars[2])) +
+  geom_function(aes(colour = "Matching Gamma"), fun = dgamma, args = list(shape = matching_gamma_par[1], scale = matching_gamma_par[2])) +
   theme_bw() +
+  theme(text = element_text(size=15)) +
   xlab(TeX("$\\tau$")) +
   ylab("Density") +
   guides(colour=guide_legend(title="Priors"))

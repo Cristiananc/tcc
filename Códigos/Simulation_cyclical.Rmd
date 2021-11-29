@@ -14,7 +14,7 @@ date_max <- 31
 set.seed(29)
 trajectory_cyclic = cyclic_traj
 
-plot(trajectory_cyclic(seq(0, 31)), type = 'l') 
+plot(trajectory_cyclic(seq(0, 31)), type = 'l', ylab = "Effective population size", xlab = "Time", xlim = c(31, 0)) 
 
 n.sim <- 500 # number of simulations
 
@@ -108,17 +108,17 @@ system.time(
 
 ```{r}
 #Loading data 
-reconstructions_20taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gumbel.rdata")
+reconstructions_20taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
 
-reconstructions_20taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gamma.rdata")
+reconstructions_20taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma.rdata")
 
-reconstructions_20taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_20taxa_gamma2.rdata")
+reconstructions_20taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma2.rdata")
 
-reconstructions_200taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gamma.rdata")
+reconstructions_200taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma.rdata")
 
-reconstructions_200taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gamma2.rdata")
+reconstructions_200taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma2.rdata")
 
-reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/bottleneck_reconstructions_200taxa_gumbel.rdata")
+reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gumbel.rdata")
 ```
 
 Saving genealogies:
@@ -130,6 +130,10 @@ list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período
 list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
 
 list.save(reconstructions_200taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gumbel.rdata")
+
+list.save(reconstructions_200taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma2.rdata")
+
+list.save(reconstructions_200taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma.rdata")
 
 ```
 
@@ -144,7 +148,7 @@ summaries_gamma2_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
-             prior = "Gumbel", ntaxa = "20")
+             prior = "PC Prior", ntaxa = "20")
 }))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
@@ -160,7 +164,7 @@ summaries_gamma2_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200")
+             prior = "PC Prior", ntaxa = "200")
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gamma2_20taxa,
@@ -245,48 +249,41 @@ for (k in 1:5) {
 
 Calculating performance metrics:
 ```{r}
-#Functions
-percent_bias <- function(aux){
-  return(100 * (1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x)))
-}
-  
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
-width <- function(x){
-  return((1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x)))
-}
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
-widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
-
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
-errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop - trajectory_cyclic(aux$x))/trajectory_cyclic(aux$x))))
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_cyclic(aux$x[aux$x <= 31]))/trajectory_cyclic(aux$x[aux$x <= 31]))))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
-widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975 - x$effpop025)/trajectory_cyclic(x$x))))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_cyclic(x$x[x$x <= 31]))))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa,
-           errors_gumbel_200taxa, errors_gumbel_200taxa,
+           errors_gumbel_20taxa, errors_gumbel_200taxa,
             errors_gamma2_20taxa, errors_gamma2_200taxa),
+  
   widths = c(widths_gamma_20taxa, widths_gamma_200taxa, 
              widths_gumbel_20taxa, widths_gumbel_200taxa,
              widths_gamma2_20taxa, widths_gamma2_200taxa),
+  
   ntaxa = rep(c(rep("20", n.sim), rep("200", n.sim)), 3),
   prior = rep(c("Gamma Flat", "PC prior", "Matching Gamma"), each = 2*n.sim)
 )
@@ -306,6 +303,20 @@ pb <- ggplot(data = errors_dt, aes(x = prior, y = bias, fill= prior)) +
 
 pb
 ```
+
+```{r}
+#Percent bias without outliers
+pb1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = bias, fill= prior)) + 
+  geom_boxplot(alpha = .2) +
+  scale_y_continuous("Percent bias") +
+  geom_hline(yintercept = 0, linetype = "longdash") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pb1
+```
+
 
 ```{r}
 #Percent error
@@ -335,7 +346,7 @@ pw
 #Plot desconsiderando os outliers
 
 #Percent bias without outliers
-pb1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = bias, fill= prior)) + 
+pb1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = bias, fill= prior)) + 
   geom_boxplot(alpha = .2) +
   scale_y_continuous("Percent bias") +
   geom_hline(yintercept = 0, linetype = "longdash") +
@@ -348,7 +359,7 @@ pb1
 
 ```{r}
 #Percent error without outliers
-pe1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = abs(bias), fill= prior)) + 
+pe1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = abs(bias), fill= prior)) + 
   geom_boxplot(alpha = .2) +
   scale_y_continuous("Percent error") +
   geom_hline(yintercept = 0, linetype = "longdash") +
@@ -372,10 +383,18 @@ peffpop <- ggplot(data = for_plot) +
     facet_grid(ntaxa~prior, scales = "free_y") +
     guides(col = "none") +
     theme_bw() +
+    scale_x_reverse() +
     stat_function(fun = trajectory_cyclic, colour = 'black') +
     NULL
 
 peffpop
-#ggsave("effective_pop_mean_bottleneck.pdf",
+#ggsave("effective_pop_mean_Cyclical.pdf",
 #       plot = peffpop)
 ```
+Saving errors and all_estimates
+```{r}
+list.save(all_estimates, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_all_estimates.rdata")
+list.save(errors_dt, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_errors_dt.rdata")
+
+```
+

@@ -115,6 +115,7 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   geom_line(alpha = .5) + 
   guides(col = "none") +
   theme_bw() +
+  theme(strip.text.x = element_text(size = 20)) +
   #ggtitle(TeX("$\\tau =$")) +
   facet_grid(prior ~ tau, scales = "free_y")
 
@@ -126,6 +127,7 @@ ggplot(data = df_simulations, aes(x = x_value, y = value,
   geom_line(alpha = .5) + 
   guides(col = "none") +
   theme_bw() +
+  theme(strip.text.x = element_text(size = 20)) +
   #ggtitle(TeX("$\\tau =$")) +
   scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
   facet_grid(prior ~ tau)
@@ -141,5 +143,6 @@ ggplot(data = df_simulations_without_gamma_flat, aes(x = x_value, y = value,
   geom_line(alpha = .5) + 
   guides(col = "none") +
   theme_bw() +
+  theme(strip.text.x = element_text(size = 20)) +
   #ggtitle(TeX("$\\tau =$")) +
   facet_grid(prior ~ tau, scales = "free_y")

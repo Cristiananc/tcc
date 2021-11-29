@@ -104,6 +104,19 @@ system.time(
 
 Saving data:
 ```{r}
+list.save(reconstructions_20taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma.rdata")
+
+list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma2.rdata")
+
+list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
+
+list.save(reconstructions_200taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gumbel.rdata")
+
+list.save(reconstructions_200taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma2.rdata")
+
+list.save(reconstructions_200taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma.rdata")
+
+```
 
 ```
 

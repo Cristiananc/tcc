@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(ggplot2)
 library(phylodyn)
+library(rlist) #used to save the datasets
 
 set.seed(29)
 
@@ -44,6 +45,22 @@ genealogies_200taxa <- lapply(1:nrep, function(i){
 ```
 
 ```{r}
+#Saving genealogies:
+  
+list.save(genealogies_20taxa, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_genealogies_20taxa.rdata")
+
+list.save(genealogies_200taxa, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_genealogies_200taxa.rdata")
+
+```
+Loading genealogies
+```{r}
+genealogies_20taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_genealogies_20taxa.rdata")
+
+genealogies_200taxa <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_genealogies_200taxa.rdata")
+```
+
+
+```{r}
 #Phylodynamic reconstruction of effective population size - 20 taxa
 system.time(
   reconstructions_20taxa_gamma <- lapply(genealogies_20taxa, function(x)
@@ -64,6 +81,22 @@ system.time(
          pc_prior = TRUE))
 )
 ```
+Save reconstruction
+```{r}
+list.save(reconstructions_20taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_20taxa_gamma.rdata")
+
+list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_20taxa_gamma2.rdata")
+
+list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_20taxa_gumbel.rdata")
+
+list.save(reconstructions_200taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_200taxa_gumbel.rdata")
+
+list.save(reconstructions_200taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_200taxa_gamma2.rdata")
+
+list.save(reconstructions_200taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/constant_reconstructions_200taxa_gamma.rdata")
+
+```
+
 
 ```{r}
 #Phylodynamic reconstruction of effective population size - 200 taxa
@@ -119,7 +152,7 @@ for (k in 1:5) {
   plot_BNPR(reconstructions_20taxa_gamma2[[random_numbers[k]]], traj = const10,
           main= paste("BNPR: Simulation", random_numbers[k]) , 
           yscale = 1,
-          col = 'coral', 
+          col = 'limegreen', 
           heatmap_labels_side = "left")
 }
 ```
@@ -161,32 +194,32 @@ Calculating performance metrics:
 
 ```{r}
 #20 taxa
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/stimes20[length(stimes20)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/stimes20[length(stimes20)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/stimes20[length(stimes20)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
 #Widths
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
-widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) 100 * (1/stimes200[length(stimes200)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
-errors_gamma2_200taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) 100 * (1/stimes200[length(stimes200)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) 100 * (1/date_max) * sum((x$effpop - 10)/10)))
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) 100 * (1/stimes200[length(stimes200)]) * sum((x$effpop[x$x <= 31] - 10)/10)))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
-widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/date_max) * sum((x$effpop975 - x$effpop025)/10)))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/10)))
 
 errors_dt <- data.frame(
   bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gamma2_20taxa, errors_gamma2_200taxa,
@@ -194,7 +227,7 @@ errors_dt <- data.frame(
   widths = c(widths_gamma_20taxa, widths_gamma2_20taxa, widths_gamma_200taxa, widths_gamma2_200taxa, 
              widths_gumbel_20taxa, widths_gumbel_200taxa),
   ntaxa = rep(c("20", "200"), 3*nrep),
-  prior = rep(c("Gamma Flat", "Gamma 2", "Gumbel"), each = 2*nrep)
+  prior = rep(c("Gamma Flat", "Matching Gamma", "PC prior"), each = 2*nrep)
 )
 ```
 
@@ -226,7 +259,7 @@ pe
 ```
 
 ```{r}
-ggsave("Imagens/percent_error_constant_trajectory.pdf",
+ggsave("Imagens/Simulated data/percent_error_constant_trajectory.pdf",
        plot = pe)
 ```
 
@@ -241,7 +274,7 @@ pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
 pw
 ```
 ```{r}
-ggsave("Imagens/width_constant_trajectory.pdf",
+ggsave("Imagens/Simulated data/constant/width_constant_trajectory.pdf",
        plot = pw)
 ```
 
@@ -254,12 +287,12 @@ summaries_gamma_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
 
 summaries_gamma2_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
   data.frame(reconstructions_20taxa_gamma2[[i]]$summary, replicate = i,
-             prior = "Gamma2", ntaxa = "20")
+             prior = "Matching Gamma", ntaxa = "20")
 }))
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:nrep, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
-             prior = "Gumbel", ntaxa = "20")
+             prior = "PC prior", ntaxa = "20")
 }))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
@@ -269,14 +302,14 @@ summaries_gamma_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
 
 summaries_gamma2_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
   data.frame(reconstructions_200taxa_gamma2[[i]]$summary,
-             replicate = i, prior = "Gamma2", ntaxa = "200")
+             replicate = i, prior = "Matching Gamma", ntaxa = "200")
 }))
 
 
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:nrep, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200")
+             prior = "PC prior", ntaxa = "200")
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa,summaries_gamma2_20taxa, summaries_gumbel_20taxa,
@@ -304,7 +337,7 @@ peffpop <- ggplot(data = for_plot, aes(x = time, y = mean, col = prior, group = 
 peffpop
 ```
 ```{r}
-ggsave("Imagens/effective_pop_constant_trajectory.pdf",
+ggsave("Imagens/Simulated data/constant/effective_pop_constant_trajectory.pdf",
        plot = peffpop)
 ```
 
@@ -338,3 +371,10 @@ p <- ggplot(data = for_plot, aes(x = prior, y = sd, col = prior, fill = prior)) 
 
 p
 ```
+
+Saving data that generate the graphs
+```{r}
+list.save(errors_dt, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/errors_dt.rdata")
+list.save(all_estimates, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Constant/all_estimates.rdata")
+```
+

@@ -5,7 +5,7 @@ library(ggpubr)
 data("regional_flu")
 set.seed(29)
 
-parameters <- c(1.13340147e+02, 1.00071471e-02) #c(2.544882, 1.203437)
+parameters <- c(2.544882, 1.203437) #c(1.13340147e+02, 1.00071471e-02)
 
 zero_dates <- list(USACanada = 2012.301, Europe = 2011.044, NorthChina = 2011.285,
                    JapanKorea = 2012.29, India = 2010.814, SouthChina = 2011.282,
@@ -16,6 +16,11 @@ years = list(USACanada = 12, Europe = 11, NorthChina = 10,
              SouthAmerica = 11, SoutheastAsia = 11, Oceania = 10)
 
 start <- 8/12
+
+number_tips <- list(USACanada = 520, Europe = 361, NorthChina = 384,
+                    JapanKorea = 444, India = 233, SouthChina = 528,
+                    SouthAmerica = 191, SoutheastAsia = 494, Oceania = 461)
+
 
 axlabs <- list(x = seq(1, 0, by=-1/12),
                labs = c("Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar",
@@ -63,7 +68,7 @@ for (region in regions){
                     results[[region]]$bnpr_matching_gamma$effpopmean, 
                     results[[region]]$bnpr_pc_prior$effpopmean),
     
-    region_name <- rep(region, 300)
+    region_name <- rep(paste(region, " (n = ", number_tips[[region]], ")", sep = ""), 300)
   )
 }
 
