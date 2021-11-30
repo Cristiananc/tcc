@@ -84,6 +84,7 @@ ggplot(data = peffpop) +
   scale_y_continuous("Effective population size", expand = c(0,0)) +
   geom_line(aes(x = Time, y = effpop, col = Prior)) + 
   theme_bw() +
+  theme(text = element_text(size=20)) +
   scale_x_reverse() +
   geom_ribbon(data = peffpop, aes(x = Time, ymin= effpop025, ymax= effpop975,
                                         fill = Prior), alpha = 0.1) +

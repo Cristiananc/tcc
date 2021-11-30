@@ -134,7 +134,7 @@ summaries_gamma2_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
-             prior = "Gumbel", ntaxa = "20")
+             prior = "PC prior", ntaxa = "20")
 }))
 
 summaries_gamma_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
@@ -150,7 +150,7 @@ summaries_gamma2_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200")
+             prior = "PC prior", ntaxa = "200")
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gamma2_20taxa,
@@ -325,7 +325,7 @@ pw
 #Plot desconsiderando os outliers
 
 #Percent bias without outliers
-pb1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = bias, fill= prior)) + 
+pb1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = bias, fill= prior)) + 
   geom_boxplot(alpha = .2) +
   scale_y_continuous("Percent bias") +
   geom_hline(yintercept = 0, linetype = "longdash") +
@@ -338,7 +338,7 @@ pb1
 
 ```{r}
 #Percent error without outliers
-pe1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = abs(bias), fill= prior)) + 
+pe1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = abs(bias), fill= prior)) + 
   geom_boxplot(alpha = .2) +
   scale_y_continuous("Percent error") +
   geom_hline(yintercept = 0, linetype = "longdash") +
@@ -348,6 +348,18 @@ pe1 <- ggplot(data = errors_dt[errors_dt$bias < 15,], aes(x = prior, y = abs(bia
 
 pe1
 ```
+
+```{r}
+pw1 <- ggplot(data = errors_dt[errors_dt$widths <200,], aes(x = prior, y = widths, fill = prior)) +
+  geom_boxplot(alpha = .2) +
+  scale_y_log10("Relative width of 95% BCI") +
+  facet_grid(.~ ntaxa) +
+  theme_bw() +
+  xlab("Prior")
+
+pw1
+```
+
 
 
 Plotting the effective population size:
@@ -369,3 +381,17 @@ peffpop
 #ggsave("effective_pop_mean_bottleneck.pdf",
 #       plot = peffpop)
 ```
+Saving data for plot
+```{r}
+list.save(errors_dt, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/errors_dt.rdata")
+list.save(all_estimates, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/all_estimates.rdata")
+
+```
+
+Load data
+```{r}
+all_estimates <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/all_estimates.rdata")
+errors_dt <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Bottleneck/errors_dt.rdata")
+
+```
+

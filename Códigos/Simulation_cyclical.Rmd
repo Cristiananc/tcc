@@ -299,6 +299,7 @@ pb <- ggplot(data = errors_dt, aes(x = prior, y = bias, fill= prior)) +
   geom_hline(yintercept = 0, linetype = "longdash") +
   facet_grid(.~ ntaxa) +
   theme_bw() +
+  #scale_y_continuous(trans=scales::pseudo_log_trans(base = 10)) +
   xlab("Prior")
 
 pb
@@ -337,6 +338,7 @@ pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
   scale_y_log10("Relative width of 95% BCI") +
   facet_grid(.~ ntaxa) +
   theme_bw() +
+  
   xlab("Prior")
 
 pw
@@ -345,16 +347,16 @@ pw
 ```{r}
 #Plot desconsiderando os outliers
 
-#Percent bias without outliers
-pb1 <- ggplot(data = errors_dt[errors_dt$bias < 100,], aes(x = prior, y = bias, fill= prior)) + 
+#posterior BCI without outliers
+pw1 <- ggplot(data = errors_dt[errors_dt$widths < 200,], aes(x = prior, y = widths, fill = prior)) +
   geom_boxplot(alpha = .2) +
-  scale_y_continuous("Percent bias") +
-  geom_hline(yintercept = 0, linetype = "longdash") +
+  scale_y_log10("Relative width of 95% BCI") +
   facet_grid(.~ ntaxa) +
   theme_bw() +
+  
   xlab("Prior")
 
-pb1
+pw1
 ```
 
 ```{r}
@@ -397,4 +399,9 @@ list.save(all_estimates, "/home/cristiana/Downloads/7º Período/TCC parte I/Dat
 list.save(errors_dt, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_errors_dt.rdata")
 
 ```
+Loading error and estimates
+```{r}
+all_estimates <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_all_estimates.rdata")
+errors_dt <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_errors_dt.rdata")
 
+```

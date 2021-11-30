@@ -104,25 +104,33 @@ system.time(
 
 Saving data:
 ```{r}
-list.save(reconstructions_20taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma.rdata")
+list.save(reconstructions_20taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gamma.rdata")
 
-list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gamma2.rdata")
+list.save(reconstructions_20taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gamma2.rdata")
 
-list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_20taxa_gumbel.rdata")
+list.save(reconstructions_20taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gumbel.rdata")
 
-list.save(reconstructions_200taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gumbel.rdata")
+list.save(reconstructions_200taxa_gumbel, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gumbel.rdata")
 
-list.save(reconstructions_200taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma2.rdata")
+list.save(reconstructions_200taxa_gamma2, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gamma2.rdata")
 
-list.save(reconstructions_200taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Cyclical/cyclical_reconstructions_200taxa_gamma.rdata")
-
-```
+list.save(reconstructions_200taxa_gamma, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gamma.rdata")
 
 ```
-
 
 Loading data:
 ```{r}
+reconstructions_20taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gumbel.rdata")
+
+reconstructions_20taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gamma.rdata")
+
+reconstructions_20taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_20taxa_gamma2.rdata")
+
+reconstructions_200taxa_gamma <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gamma.rdata")
+
+reconstructions_200taxa_gamma2 <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gamma2.rdata")
+
+reconstructions_200taxa_gumbel <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_reconstructions_200taxa_gumbel.rdata")
 
 ```
 
@@ -143,7 +151,7 @@ summaries_gamma_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 
 summaries_gumbel_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_20taxa_gumbel[[i]]$summary, replicate = i, 
-             prior = "Gumbel", ntaxa = "20")
+             prior = "PC prior", ntaxa = "20")
 }))
 
 summaries_gamma2_20taxa <- do.call(rbind, lapply(1:n.sim, function(i){
@@ -164,13 +172,13 @@ summaries_gamma2_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
 summaries_gumbel_200taxa <- do.call(rbind, lapply(1:n.sim, function(i){
   data.frame(reconstructions_200taxa_gumbel[[i]]$summary,
              replicate = i,
-             prior = "Gumbel", ntaxa = "200")
+             prior = "PC prior", ntaxa = "200")
 }))
 
 all_estimates <- rbind(summaries_gamma_20taxa, summaries_gamma2_20taxa,
                        summaries_gumbel_20taxa,
-                       summaries_gamma2_200taxa,
-                       summaries_gamma_200taxa, summaries_gumbel_200taxa)
+                       summaries_gamma_200taxa,
+                       summaries_gamma2_200taxa, summaries_gumbel_200taxa)
 
 all_estimates$ntaxa <- as.factor(all_estimates$ntaxa)
 head(all_estimates)
@@ -253,54 +261,43 @@ for (k in 1:5) {
 Calculating performance metrics:
 ```{r}
 #20 taxa
-percent_error <- function(x){
-  return(100 * (1/date_max) * sum((x$effpop - 10)/10))
-}
-  
-errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
+errors_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
-errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
+errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
-errors_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, percent_error(x)))
+errors_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function (aux) 100*(1/stimes20[length(stimes20)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
-#Size of the posterior BC:
-#20 taxa
-width <- function(x){
-  return((1/date_max) * sum((x$effpop975 - x$effpop025)/10))
-}
+widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
-widths_gamma_20taxa <- unlist(lapply(reconstructions_20taxa_gamma, width(x)))
+widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
-widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, width(x)))
-
-widths_gamma2_20taxa <- unlist(lapply(reconstructions_20taxa_gamma2, width(x)))
+widths_gumbel_20taxa <- unlist(lapply(reconstructions_20taxa_gumbel, function(x) (1/stimes20[length(stimes20)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
 #200 taxa
-errors_gamma_200taxa <- unlist(lapply(reconstructions_20taxa_gamma, percent_error(x)))
+errors_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
-errors_gumbel_200taxa <- unlist(lapply(reconstructions_20taxa_gumbel, percent_error(x)))
+errors_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
-errors_gamma2_200taxa <- unlist(lapply(reconstructions_20taxa_gamma2, percent_error(x)))
+errors_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function (aux) 100*(1/stimes200[length(stimes200)]) * sum((aux$effpop[aux$x <= 31] - trajectory_exponential(aux$x[aux$x <= 31]))/trajectory_exponential(aux$x[aux$x <= 31]))))
 
 #Width 200taxa
-widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, width(x)))
+widths_gamma_200taxa <- unlist(lapply(reconstructions_200taxa_gamma, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
-widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, width(x)))
+widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
-widths_gamma2_200taxa <- unlist(lapply(reconstructions_200taxa_gamma2, width(x)))
+widths_gumbel_200taxa <- unlist(lapply(reconstructions_200taxa_gumbel, function(x) (1/stimes200[length(stimes200)]) * sum((x$effpop975[x$x <= 31] - x$effpop025[x$x <= 31])/trajectory_exponential(x$x[x$x <= 31]))))
 
 errors_dt <- data.frame(
-  bias = c(errors_gamma_20taxa, errors_gamma_200taxa, errors_gumbel_200taxa, 
-           errors_gumbel_200taxa,
-           errors_gamma2_200taxa, errors_gamma2_200taxa),
+  bias = c(errors_gamma_20taxa, errors_gamma_200taxa,
+           errors_gumbel_20taxa, errors_gumbel_200taxa,
+            errors_gamma2_20taxa, errors_gamma2_200taxa),
   
   widths = c(widths_gamma_20taxa, widths_gamma_200taxa, 
              widths_gumbel_20taxa, widths_gumbel_200taxa,
              widths_gamma2_20taxa, widths_gamma2_200taxa),
   
-  ntaxa = rep(c("20", "200"), 3*nrep),
-  
-  prior = rep(c("Gamma Flat", "Gamma 2", "Gumbel"), each = 2*nrep)
+  ntaxa = rep(c(rep("20", n.sim), rep("200", n.sim)), 3),
+  prior = rep(c("Gamma Flat", "PC prior", "Matching Gamma"), each = 2*n.sim)
 )
 ```
 
@@ -338,6 +335,15 @@ pw <- ggplot(data = errors_dt, aes(x = prior, y = widths, fill = prior)) +
 pw
 ```
 
+```{r}
+pw1 <- ggplot(data = errors_dt[errors_dt$widths < 100, ], aes(x = prior, y = widths, fill = prior)) +
+  geom_boxplot(alpha = .2) +
+  scale_y_log10("Relative width of 95% BCI") +
+  facet_grid(.~ ntaxa) +
+  theme_bw()
+
+pw1
+```
 Plotting the effective population size mean:
 ```{r}
 for_plot <- all_estimates
@@ -350,13 +356,29 @@ peffpop <- ggplot(data = for_plot) +
     facet_grid(ntaxa~prior, scales = "free_y") +
     guides(col = "none") +
     theme_bw() +
-    stat_function(fun = trajectory_bottleneck, colour = 'black') +
+    scale_x_reverse() +
+    stat_function(fun = trajectory_exponential, colour = 'black') +
     NULL
 
 peffpop
 ```
 
 ```{r}
-ggsave("Imagens/effective_pop_mean_bottleneck.pdf",
+ggsave("Imagens/effective_pop_mean_exponential.pdf",
        plot = peffpop)
 ```
+
+Saving errors and plots
+```{r}
+list.save(all_estimates, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_all_estimates.rdata")
+list.save(errors_dt, "/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_errors_dt.rdata")
+
+```
+
+Load errors and all_estimates
+```{r}
+all_estimates <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_all_estimates.rdata")
+errors_dt <- list.load("/home/cristiana/Downloads/7º Período/TCC parte I/Data/Exponential/exponential_errors_dt.rdata")
+
+```
+
