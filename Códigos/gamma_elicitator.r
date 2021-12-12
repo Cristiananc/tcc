@@ -39,14 +39,14 @@ curve(dgamma(x, shape = the.pars[1],
 #Density plots
 ggplot() +
   xlim(0, 10) +
-  geom_function(aes(colour = "Gamma Flat"), fun = dgamma, args = list(shape = 0.001, rate = 0.001)) +
-  geom_function(aes(colour = "PC Prior"), fun = dgumbel2, args = list(a = pc_prior[1], b = pc_prior[2])) +
+  geom_function(aes(colour = "Gamma usual"), fun = dgamma, args = list(shape = 0.001, rate = 0.001)) +
+  geom_function(aes(colour = "PC"), fun = dgumbel2, args = list(a = pc_prior[1], b = pc_prior[2])) +
   geom_function(aes(colour = "Matching Gamma"), fun = dgamma, args = list(shape = matching_gamma_par[1], scale = matching_gamma_par[2])) +
   theme_bw() +
   theme(text = element_text(size=15)) +
   xlab(TeX("$\\tau$")) +
-  ylab("Density") +
-  guides(colour=guide_legend(title="Priors"))
+  ylab("Densidade") +
+  guides(colour=guide_legend(title="Prioris"))
 
 precisions <- rgamma(n = 1E6,
             shape = the.pars[1],
